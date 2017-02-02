@@ -1,0 +1,26 @@
+body {
+    background-color: rgba(88, 189, 50, 0.15);
+    background-image: url("subtle-grunge.png");*/
+}
+
+#login_area {
+	min-width: 200px ;	
+}
+
+
+
+/*
+#mainBody {
+	background-image: url("subtle-white-feathers.png");
+	background-color: rgba(89, 120, 36, .65);
+} */ 
+.page-header {
+	color: rgba(45, 96, 26, .65);
+	border-color: rgba(58, 125, 33, 0.65);
+	margin-top: -15px;
+}
+
+
+.page-header > h1 > small{
+	color: rgba(133, 87, 5, .35);
+}

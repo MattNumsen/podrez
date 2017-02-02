@@ -1,0 +1,30 @@
+h4 {
+  margin-top: 25px;
+}
+.row {
+  margin-bottom: 20px;
+}
+.row .row {
+  margin-top: 10px;
+  margin-bottom: 0;
+}
+[class*="col-"] {
+  padding-top: 15px;
+  padding-bottom: 15px;
+  border: 1px solid rgba(86,61,124,.2);
+}
+#loginRow {
+  background-image: url("subtle-white-feathers.png");
+    background-color: rgba(88, 189, 50, 0.65);
+    border-color: rgba(58, 125, 33, 0.65);
+}
+#nav {
+  
+  background-color: rgba(0,0,0,0);
+  border-color: rgba(0,0,0,0);
+}
+
+hr {
+  margin-top: 40px;
+  margin-bottom: 40px;
+}
