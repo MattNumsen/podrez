@@ -8,7 +8,7 @@ CREATE TABLE roles (
 	description VARCHAR
 );
 
-CREATE TABLE user (
+CREATE TABLE podUser (
 	podID SERIAL PRIMARY KEY,
 	role integer,
 	FOREIGN KEY (role) REFERENCES roles (role)
@@ -19,23 +19,23 @@ CREATE TABLE studentAccount (
 	podID INTEGER NOT NULL,
 	legalName VARCHAR,
 	preferredName VARCHAR,
-	SID INTEGER,
+	SID INTEGER UNIQUE,
 	age INTEGER,
 	gender VARCHAR,
 	PRIMARY KEY (podID),
-	FOREIGN KEY (podID) REFERENCES user (podID)
+	FOREIGN KEY (podID) REFERENCES podUser (podID)
 );
 
 CREATE TABLE reslifeAccount (
 	podID INTEGER NOT NULL,
-	resID SERIAL,
+	resID SERIAL UNIQUE,
 	legalName VARCHAR, 
 	preferredNAme VARCHAR,
 	roomID INTEGER, 
 	permission INTEGER,
-	StudentID INTEGER
+	StudentID INTEGER,
 	PRIMARY KEY (podID),
-	FOREIGN KEY (podID) REFERENCES user (podID)
+	FOREIGN KEY (podID) REFERENCES podUser (podID)
 );
 
 CREATE TABLE housingAccount (
@@ -45,7 +45,7 @@ CREATE TABLE housingAccount (
 	permission INTEGER, 
 	studentID INTEGER, 
 	PRIMARY KEY (podID),
-	FOREIGN KEY (podID) REFERENCES user (podID)
+	FOREIGN KEY (podID) REFERENCES podUser (podID)
 );
 
 CREATE TABLE building (
@@ -55,7 +55,7 @@ CREATE TABLE building (
 
 CREATE TABLE room (
 	roomID VARCHAR PRIMARY KEY,
-	buildingID VARCHAR
+	buildingID VARCHAR,
 	FOREIGN KEY (buildingID) REFERENCES building (buildingID)
 );
 
@@ -88,7 +88,7 @@ CREATE TABLE reservation (
 	reserved_date_start DATE,
 	reserved_data_finish DATE,
 	reservation_duration INTEGER,
-	roomID INTEGER, 
+	roomID VARCHAR, 
 	guestID INTEGER,
 	FOREIGN KEY (roomID) REFERENCES room (roomID), 
 	FOREIGN KEY (guestID) REFERENCES guest (guestID)
@@ -96,13 +96,13 @@ CREATE TABLE reservation (
 
 CREATE TABLE maintRequest (
 	maintID SERIAL PRIMARY KEY, 
-	userID INTEGER NOT NULL, 
-	buildingID INTEGER, 
-	roomID INTEGER,
+	podID INTEGER NOT NULL, 
+	buildingID VARCHAR, 
+	roomID VARCHAR,
 	info JSONB,
 	FOREIGN KEY (roomID) REFERENCES room (roomID), 
 	FOREIGN KEY (buildingID) REFERENCES building (buildingID),
-	FOREIGN KEY (userID) REFERENCES user (userID)
+	FOREIGN KEY (podID) REFERENCES podUser (podID)
 );
 
 CREATE TABLE incident (
@@ -112,12 +112,12 @@ CREATE TABLE incident (
 );
 
 CREATE TABLE account_incident (
-	userID INTEGER NOT NULL, 
+	podID INTEGER NOT NULL, 
 	incidentID INTEGER NOT NULL, 
 	involvment_type INTEGER, 
-	FOREIGN KEY (userID) REFERENCES user (userID), 
+	FOREIGN KEY (podID) REFERENCES podUser (podID), 
 	FOREIGN KEY (incidentID) REFERENCES incident (incidentID), 
-	PRIMARY KEY (userID, incidentID)
+	PRIMARY KEY (podID, incidentID)
 );
 
 CREATE TABLE equipment (
@@ -127,9 +127,9 @@ CREATE TABLE equipment (
 
 CREATE TABLE rentalAgreement (
 	eqRentalID SERIAL PRIMARY KEY,
-	userID INTEGER NOT NULL, 
+	podID INTEGER NOT NULL, 
 	rentalDate DATE NOT NULL, 
-	FOREIGN KEY (userID) REFERENCES user (USERID)
+	FOREIGN KEY (podID) REFERENCES podUser (podID)
 );
 
 CREATE TABLE eqiupment_rentalAgreement (
@@ -155,6 +155,6 @@ CREATE TABLE account_program (
 CREATE TABLE attending (
 	podID INTEGER NOT NULL, 
 	programID INTEGER NOT NULL,
-	FOREIGN KEY (podID) REFERENCES user (podID),
+	FOREIGN KEY (podID) REFERENCES podUser (podID),
 	FOREIGN KEY (programID) REFERENCES program (programID)
 );
