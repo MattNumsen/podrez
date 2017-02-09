@@ -84,7 +84,7 @@
               <input type="text" id="housInputID" class="form-control" placeholder="Staff ID" required autofocus>
               <label for="housInputPassword" class="sr-only">Password</label>
               <input type="password" id="housInputPassword" class="form-control" placeholder="Password" required>
-              <button class="btn btn-lg btn-primary btn-block" type="submit" id="housSignIn">Sign in</button>
+              <button class="btn btn-lg btn-primary btn-block" type="submit" id="housSignIn">spoop</button>
             </form>
           </div>
         </div>
