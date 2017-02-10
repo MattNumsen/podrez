@@ -17,10 +17,12 @@ CREATE TABLE podUser (
 
 CREATE TABLE studentAccount (
 	podID INTEGER NOT NULL,
-	legalName VARCHAR,
+	firstName VARCHAR,
+	lastName VARCHAR,
 	preferredName VARCHAR,
-	SID INTEGER UNIQUE,
+	SID INTEGER UNIQUE NOT NULL, /*login info*/
 	age INTEGER,
+	birthdate DATE,
 	gender VARCHAR,
 	PRIMARY KEY (podID),
 	FOREIGN KEY (podID) REFERENCES podUser (podID)
@@ -28,20 +30,22 @@ CREATE TABLE studentAccount (
 
 CREATE TABLE reslifeAccount (
 	podID INTEGER NOT NULL,
-	resID SERIAL UNIQUE,
-	legalName VARCHAR, 
-	preferredNAme VARCHAR,
+	resID VARCHAR UNIQUE NOT NULL, /*login info*/
+	firstName VARCHAR, 
+	lastName VARCHAR,
+	preferredName VARCHAR,
 	roomID INTEGER, 
 	permission INTEGER,
-	StudentID INTEGER,
+	studentID INTEGER,
 	PRIMARY KEY (podID),
 	FOREIGN KEY (podID) REFERENCES podUser (podID)
 );
 
 CREATE TABLE housingAccount (
 	podID INTEGER NOT NULL, 
-	housingID SERIAL, 
-	name VARCHAR, 
+	housingID VARCHAR UNIQUE NOT NULL, /*login info*/
+	firstName VARCHAR,
+	lastName VARCHAR, 
 	permission INTEGER, 
 	studentID INTEGER, 
 	PRIMARY KEY (podID),
@@ -146,7 +150,7 @@ CREATE TABLE program (
 );
 
 CREATE TABLE account_program (
-	resID INTEGER NOT NULL, 
+	resID VARCHAR NOT NULL, 
 	programID INTEGER NOT NULL, 
 	FOREIGN KEY (resID) REFERENCES reslifeAccount (resID),
 	FOREIGN KEY (programID) REFERENCES program (programID)
