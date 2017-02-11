@@ -14,7 +14,7 @@ delete_housingAccount(podID)
 \c podrez
 
 /*STUDENT ACCOUNT CREATION FUNCTION*/
-CREATE OR REPLACE FUNCTION insert_student(firstName VARCHAR, lastName VARCHAR, preferredName VARCHAR, birthdate DATE, SID INTEGER, age INTEGER, gender VARCHAR) 
+CREATE OR REPLACE FUNCTION insert_student(firstName VARCHAR, lastName VARCHAR, preferredName VARCHAR, SID INTEGER, age INTEGER, birthdate DATE, gender VARCHAR) 
 RETURNS void AS $BODY$
 DECLARE
 _podID INTEGER;
@@ -23,14 +23,14 @@ BEGIN
 	VALUES (1) RETURNING podID INTO _podID;
 
 	INSERT INTO studentAccount (podID, firstName, lastName, preferredName, birthdate, SID, age, gender)
-	VALUES (_podID, legalName, preferredName, birthdate, SID, age, gender);
+	VALUES (_podID, firstName, lastName, preferredName, birthdate, SID, age, gender);
 
 END;
 $BODY$ LANGUAGE plpgsql;
 
 
 /*RESLIFE ACCOUNT CREATION FUNCTION*/
-CREATE OR REPLACE FUNCTION insert_reslifeAccount(resID VARCHAR, firstName VARCHAR, lastName VARCHAR, preferredName VARCHAR, roomID INTEGER, permission INTEGER, studentID INTEGER)
+CREATE OR REPLACE FUNCTION insert_reslifeAccount(resID VARCHAR, firstName VARCHAR, lastName VARCHAR, preferredName VARCHAR, permission INTEGER, studentID INTEGER)
 RETURNS void AS $BODY$
 DECLARE
 _podID INTEGER;
@@ -38,8 +38,8 @@ BEGIN
 	INSERT INTO podUser (role)
 	VALUES (2) RETURNING podID INTO _podID;
 
-	INSERT INTO reslifeAccount (podID, resID, firstName, lastName, preferredName, roomID, permission, StudentID)
-	VALUES (_podID, resID, firstName, lastName, preferredName, roomID, permission, StudentID);
+	INSERT INTO reslifeAccount (podID, resID, firstName, lastName, preferredName, permission, StudentID)
+	VALUES (_podID, resID, firstName, lastName, preferredName, permission, StudentID);
 END;
 $BODY$ LANGUAGE plpgsql;
 
@@ -54,8 +54,23 @@ BEGIN
 	VALUES (3) RETURNING podID INTO _podID;
 
 
-	INSERT INTO reslifeAccount (podID, housingID, firstName, lastName, permission, studentID)
+	INSERT INTO housingAccount (podID, housingID, firstName, lastName, permission, studentID)
 	VALUES (_podID, housingID, firstName, lastName, permission, studentID);
+END;
+$BODY$ LANGUAGE plpgsql;
+
+
+CREATE OR REPLACE FUNCTION insert_housingAccount(housingID VARCHAR, firstName VARCHAR, lastName VARCHAR, permission INTEGER)
+RETURNS void AS $BODY$
+DECLARE
+_podID INTEGER;
+BEGIN
+	INSERT INTO podUser (role)
+	VALUES (3) RETURNING podID INTO _podID;
+
+
+	INSERT INTO housingAccount (podID, housingID, firstName, lastName, permission)
+	VALUES (_podID, housingID, firstName, lastName, permission);
 END;
 $BODY$ LANGUAGE plpgsql;
 

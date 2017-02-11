@@ -34,7 +34,6 @@ CREATE TABLE reslifeAccount (
 	firstName VARCHAR, 
 	lastName VARCHAR,
 	preferredName VARCHAR,
-	roomID INTEGER, 
 	permission INTEGER,
 	studentID INTEGER,
 	PRIMARY KEY (podID),
@@ -58,9 +57,10 @@ CREATE TABLE building (
 );
 
 CREATE TABLE room (
-	roomID VARCHAR PRIMARY KEY,
+	roomID VARCHAR,
 	buildingID VARCHAR,
-	FOREIGN KEY (buildingID) REFERENCES building (buildingID)
+	FOREIGN KEY (buildingID) REFERENCES building (buildingID),
+	PRIMARY KEY (roomID, buildingID)
 );
 
 CREATE TABLE application (
@@ -73,10 +73,11 @@ CREATE TABLE application (
 
 CREATE TABLE agreement (
 	applicationID INTEGER NOT NULL,
-	roomID VARCHAR NOT NULL, 
+	roomID VARCHAR NOT NULL,
+	buildingID VARCHAR NOT NULL, 
 	billVal NUMERIC (7,2),
 	FOREIGN KEY (applicationID) REFERENCES application (applicationID),
-	FOREIGN KEY (roomID) REFERENCES room (roomID),
+	FOREIGN KEY (roomID, buildingID) REFERENCES room (roomID, buildingID),
 	PRIMARY KEY (applicationID)
 );
 
@@ -92,9 +93,10 @@ CREATE TABLE reservation (
 	reserved_date_start DATE,
 	reserved_data_finish DATE,
 	reservation_duration INTEGER,
-	roomID VARCHAR, 
+	roomID VARCHAR NOT NULL,
+	buildingID VARCHAR NOT NULL, 
 	guestID INTEGER,
-	FOREIGN KEY (roomID) REFERENCES room (roomID), 
+	FOREIGN KEY (roomID, buildingID) REFERENCES room (roomID, buildingID), 
 	FOREIGN KEY (guestID) REFERENCES guest (guestID)
 );
 
@@ -102,10 +104,9 @@ CREATE TABLE maintRequest (
 	maintID SERIAL PRIMARY KEY, 
 	podID INTEGER NOT NULL, 
 	buildingID VARCHAR, 
-	roomID VARCHAR,
+	roomID VARCHAR NOT NULL,
 	info JSONB,
-	FOREIGN KEY (roomID) REFERENCES room (roomID), 
-	FOREIGN KEY (buildingID) REFERENCES building (buildingID),
+	FOREIGN KEY (roomID, buildingID) REFERENCES room (roomID, buildingID), 	
 	FOREIGN KEY (podID) REFERENCES podUser (podID)
 );
 
@@ -136,7 +137,7 @@ CREATE TABLE rentalAgreement (
 	FOREIGN KEY (podID) REFERENCES podUser (podID)
 );
 
-CREATE TABLE eqiupment_rentalAgreement (
+CREATE TABLE equipment_rentalAgreement (
 	eqRentalID INTEGER NOT NULL, 
 	eqID INTEGER NOT NULL,
 	FOREIGN KEY (eqRentalID) REFERENCES rentalAgreement (eqRentalID),
