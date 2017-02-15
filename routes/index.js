@@ -13,7 +13,15 @@ router.get('/', function(req, res, next) {
 router.get('/createaccount', function (req, res, next) {
 	res.render('createAccount', {title: 'Success'});
 });
+router.get('/profile/:id', function (req, res, next) {
+	res.render('student', {title: 'Success'});
+});
 
 router.get('/test/students', db.getAllStudents);
+router.get('/test/students/:id', db.getStudent);
+router.post('/test/students', db.createStudent);
+router.put('/test/students/:id', db.updateStudent);
+router.delete('/test/students/:id', db.deleteStudent);
+
 
 module.exports = router;

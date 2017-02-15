@@ -9,9 +9,7 @@
     <meta name="author" content="">
     <link rel="icon" href="/leaf.ico">
 
-
-    <title>PodRez - Create Account</title>
-
+    <title>Podrez - Create Account</title>
     <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.3/angular.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.3/angular-route.min.js"></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
@@ -23,7 +21,6 @@
     <link rel="stylesheet" type="text/css" href="/stylesheets/index.css"/>
     <link rel="stylesheet" type="text/css" href="/stylesheets/grid.css"/>
     <link rel="stylesheet" type="text/css" href="/stylesheets/navbar.css"/> 
-
 
     
     <script> 

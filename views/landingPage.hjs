@@ -7,10 +7,7 @@
     <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
     <meta name="description" content="">
     <meta name="author" content="">
-    <link rel="icon" href="leaf.ico">
-    <link rel="stylesheet" type="text/css" href="index.css"/>
-    <link rel="stylesheet" type="text/css" href="grid.css"/>
-    <link rel="stylesheet" type="text/css" href="navbar.css"/> 
+    <link rel="icon" href="/leaf.ico">
 
     <title>PodRez - Welcome</title>
 
@@ -22,9 +19,15 @@
     <script src="script.js"></script>
 
     
+    <link rel="stylesheet" type="text/css" href="/stylesheets/index.css"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/grid.css"/>
+    <link rel="stylesheet" type="text/css" href="/stylesheets/navbar.css"/> 
+
+
+    
     <script> 
     $(function(){
-      $("#header").load("header.html"); 
+      $("#header").load("/header.html"); 
     });
     </script> 
 
