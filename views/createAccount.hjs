@@ -17,9 +17,10 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
     <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
-    <script src="script.js"></script>
 
-    
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
+       
     <link rel="stylesheet" type="text/css" href="/stylesheets/index.css"/>
     <link rel="stylesheet" type="text/css" href="/stylesheets/grid.css"/>
     <link rel="stylesheet" type="text/css" href="/stylesheets/navbar.css"/> 
@@ -30,14 +31,26 @@
     $(function(){
       $("#header").load("/header.html"); 
     });
+    </script>
+
+    <script>
+    $(document).ready(function(){
+      var date_input=$('input[name="date"]'); //our date input has the name "date"
+      var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
+      var options={
+        format: 'mm/dd/yyyy',
+        container: container,
+        todayHighlight: true,
+        autoclose: true,
+      };
+      date_input.datepicker(options);
+    });
     </script> 
 
 
   <body>
     <!-- Header + Title -->
     <div id="header"></div>
-
-
 
     <div class="container">
       <div class="jumbotron" id="mainBody">
@@ -77,7 +90,9 @@
             <li class="list-group-item">                
               <div class="input-group">
                 <div class="input-group-addon" id="login_area">Date of Birth</div>
-                <input type="date" class="form-control" min="1967-01-01" max="2016-01-01" placeholder="(MM/DD/YYYY) ex. 03/31/1992" id="email">
+                <div class="form-group"> <!-- Date input -->
+                  <input class="form-control" id="date" name="date" placeholder="MM/DD/YYY" type="text"/>
+                </div>
               </div>
             </li>
             <li class="list-group-item">                
@@ -102,12 +117,5 @@
         </form>
       </div>
     </div>
-    
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="js/vendor/jquery.min.js"><\/script>')</script>
-    <script src="js/bootstrap.min.js"></script>
-    <!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
-    <script src="js/ie10-viewport-bug-workaround.js"></script>
-
   </body>
 </html>

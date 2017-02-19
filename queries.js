@@ -36,7 +36,7 @@ function getAllStudents(req, res, next) {
 					status: 'success', 
 					data:data, 
 					message: 'Retrieved ALL students'
-				});
+				});		
 		})
 		.catch(function (err) {
 			return next(err);
@@ -54,6 +54,27 @@ function getStudent(req, res, next) {
 			data: data, 
 			message: 'Retreived ONE student'
 		});
+	})
+	.catch(function (err) {
+		return next(err);
+	});
+}
+
+function programProposal(req, res, next) {
+	
+	var reslifeUser = [];
+	db.many('select * from reslifeAccount')
+	.then(function (data1) {
+		reslifeUser=data1;
+		db.many('select * from building')
+		.then(function(data2){
+			console.log(data2);
+			res.render('temp2', {
+				resUser: reslifeUser,
+				buildings: data2
+			});
+		})
+		
 	})
 	.catch(function (err) {
 		return next(err);
@@ -110,6 +131,7 @@ function deleteStudent(req, res, next) {
 
 
 module.exports = {
+	programProposal: programProposal,
   	getStudent: getStudent,
   	getAllStudents: getAllStudents,
   	createStudent: createStudent,
