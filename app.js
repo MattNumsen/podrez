@@ -6,6 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var bootstrap = require("express-bootstrap-service");
 var nunjucks = require('nunjucks');
+var nunjucksDate = require('nunjucks-date');
 
 var index = require('./routes/index');
 
@@ -28,10 +29,14 @@ app.use(bootstrap.serve);
 app.use('/', index);
 
 app.set('view engine', 'html');
-var env = nunjucks.configure('views', {
-  autoescape: true,
-  express   : app
-});
+
+
+nunjucksDate.setDefaultFormat('MMMM Do YYYY, h:mm:ss a'); 
+var env = nunjucks.configure('views', 
+  {   autoescape: true,   
+    express: app 
+  }); 
+nunjucksDate.install(env);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

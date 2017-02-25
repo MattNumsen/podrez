@@ -3,26 +3,26 @@ var router = express.Router();
 
 var db = require("../queries.js");
 
-/* GET home page. 
+/* GET home page. */
 router.get('/', function(req, res, next) {
   res.render('landingPage', { title: 'Express' });
 });
-*/
+
 /*GET create account. */
-/*
+
 router.get('/createaccount', function (req, res, next) {
 	res.render('createAccount', {title: 'Success'});
 });
-router.get('/profile/:id', function (req, res, next) {
-	res.render('studentProfile', {title: 'Success'});
-});
 
-router.get('/createProgram', function (req, res, send) {
-	res.render('createProgram', {title: 'Create Program'})
-});
-*/
-router.get('/test', db.programProposal);
+
+
+router.get('/createProgram', db.programProposal);
+router.post('/createProgram', db.programSubmission);
+
+
+
 	
+router.get('/profile/:id', db.getStudent);
 
 
 /*

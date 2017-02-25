@@ -28,6 +28,49 @@ db.connect()
         console.log("ERROR:", error.message || error);
     });
 
+function programSubmission(req, res, next) {
+	
+	
+	/*
+		In a program submission, we need to do a few things
+		#1: Create a "Program" entry in the programs table
+		#2: Create a "program_account" entry for EACH COLLABORATOR and (once user authentication exists) THE USER CREATING THE PROGRAM
+
+	*/
+
+	var pass=req.body;
+	var count=req.body.collabCount;
+	console.log(count);
+	console.log(req.body.collaborators[0]);
+	console.log(req.body.collaborators[1]);
+
+
+	db.tx(function(t) {
+        // t = this
+        // t.ctx = transaction context object
+
+        return t.one('INSERT INTO program(info) VALUES(${this}) RETURNING programid', pass)
+            .then(program=> {
+            
+            	for (i=0; i < count; i++){
+            		console.log(req.body.collaborators[i]);
+            		t.none('INSERT INTO account_program(programID, resID) VALUES($1, $2)', [program.programid, req.body.collaborators[i] ]);
+            	}  
+            });
+    })
+    .then(function(data) {
+        // success
+        res.render('landingPage');
+        // data = as returned from the transaction's callback
+    })
+    .catch(function(error) {
+        // error
+        return next(err);
+    });
+
+
+}
+
 function getAllStudents(req, res, next) {
 	db.any('select * from studentAccount')
 		.then(function(data) {
@@ -48,12 +91,9 @@ function getStudent(req, res, next) {
 	var studID = parseInt(req.params.id);
 	db.one('select * from studentAccount where podID = $1', studID)
 	.then(function(data) {
-		res.status(200)
-		.json({
-			status: 'success', 
-			data: data, 
-			message: 'Retreived ONE student'
-		});
+		res.render('studentProfile', {
+				studAccount: data 
+			});
 	})
 	.catch(function (err) {
 		return next(err);
@@ -131,6 +171,7 @@ function deleteStudent(req, res, next) {
 
 
 module.exports = {
+	programSubmission: programSubmission, 
 	programProposal: programProposal,
   	getStudent: getStudent,
   	getAllStudents: getAllStudents,

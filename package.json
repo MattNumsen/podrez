@@ -15,6 +15,7 @@
     "hjs": "~0.0.6",
     "morgan": "~1.7.0",
     "nunjucks": "^3.0.0",
+    "nunjucks-date": "^1.2.0",
     "pg-promise": "^5.5.6",
     "serve-favicon": "~2.3.0"
   }
