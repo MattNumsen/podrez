@@ -1,121 +1,90 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="/leaf.ico">
-
-
-    <title>PodRez - Create Account</title>
-
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.3/angular.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.3/angular-route.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
-
-    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/js/bootstrap-datepicker.min.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.4.1/css/bootstrap-datepicker3.css"/>
-       
-    <link rel="stylesheet" type="text/css" href="/stylesheets/index.css"/>
-    <link rel="stylesheet" type="text/css" href="/stylesheets/grid.css"/>
-    <link rel="stylesheet" type="text/css" href="/stylesheets/navbar.css"/> 
-
-
-    
-    <script> 
-    $(function(){
-      $("#header").load("/header.html"); 
-    });
-    </script>
-
-    <script>
-    $(document).ready(function(){
-      var date_input=$('input[name="date"]'); //our date input has the name "date"
-      var container=$('.bootstrap-iso form').length>0 ? $('.bootstrap-iso form').parent() : "body";
-      var options={
-        format: 'mm/dd/yyyy',
-        container: container,
-        todayHighlight: true,
-        autoclose: true,
-      };
-      date_input.datepicker(options);
-    });
-    </script> 
-
-
-  <body>
-    <!-- Header + Title -->
-    <div id="header"></div>
+{% extends 'outer.html' %}  
+  {% block body %}
+    {% include 'header.html' %}
 
     <div class="container">
       <div class="jumbotron" id="mainBody">
         <h2>Create an Account</h2>
-        <form id="AccountCreate"> 
-          <ul class="list-group">
-            <li class="list-group-item">
-              <div class="input-group">
-                <div class="input-group-addon" id="login_area">First Name (Given Name)</div>
-                <input type="text" class="form-control" placeholder="First Name" id="firstName">
-              </div>
-            </li> 
-            <li class="list-group-item">
-              <div class="input-group">
-                <div class="input-group-addon" id="login_area">Last Name (Family Name)</div>
-                <input type="text" class="form-control" placeholder="Last Name" id="lastName">
-              </div>
-            </li> 
-            <li class="list-group-item">                 
-              <div class="input-group">
-                <div class="input-group-addon" id="login_area">Middle Name</div>
-                <input type="text" class="form-control" placeholder="Middle Name" id="MiddleName">
-              </div> 
-            </li> 
-            <li class="list-group-item">                
-              <div class="input-group">
-                <div class="input-group-addon" id="login_area">Student ID</div>
-                <input type="text" class="form-control" placeholder="Student ID (ex. 301143052)" id="studentNum">
-              </div> 
-            </li> 
-            <li class="list-group-item">                
-              <div class="input-group">
-                <div class="input-group-addon" id="login_area">E-mail</div>
-                <input type="text" class="form-control" placeholder="E-mail (ex. username@host.com)" id="email">
-              </div>
-            </li>
-            <li class="list-group-item">                
-              <div class="input-group">
-                <div class="input-group-addon" id="login_area">Date of Birth</div>
-                <div class="form-group"> <!-- Date input -->
-                  <input class="form-control" id="date" name="date" placeholder="MM/DD/YYY" type="text"/>
-                </div>
-              </div>
-            </li>
-            <li class="list-group-item">                
-              <div class="input-group">
-                <div class="input-group-addon" id="login_area">Gender</div>
-                <select class="form-control" id="sel1">
-                  <option>Male</option>
-                  <option>Female</option>
-                  <option>Felmale</option>
-                  <option>Trip to Tokyo February 23 Boys and Girls Trip Japan</option>
-                </select>
-              </div>
-            </li>
-            <li class="list-group-item">                
-              <div class="input-group">
-                <div class="input-group-addon" id="login_area">Preferred Pronouns</div>
-                <input type="text" class="form-control" placeholder="E-Mail (ex. username@host.com)" id="email">
-              </div>
-            </li>
-          </ul>
-
+        <form id="AccountCreate" method="post" action="createAccount"> 
+          <table class="table">
+            <tbody>
+              <tr>
+                <td>
+                  <div class="input-group">
+                    <div class="input-group-addon" id="login_area">Given Name</div>
+                    <input required type="text" class="form-control" form="AccountCreate" placeholder="First Name" id="firstName" name="fname">
+                  </div>
+                </td> 
+                <td>
+                  <div class="input-group">
+                    <div class="input-group-addon" id="login_area">Family Name</div>
+                    <input required type="text" class="form-control" form="AccountCreate" placeholder="Last Name" id="lastName" name="lname">
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>                              
+                  <div class="input-group">
+                    <div class="input-group-addon" id="login_area">Middle Name</div>
+                    <input type="text" class="form-control" form="AccountCreate" placeholder="Middle Name" id="MiddleName" name="midname">
+                  </div> 
+                </td> 
+                <td>                
+                  <div class="input-group">
+                    <div class="input-group-addon" id="login_area">Student ID</div>
+                    <input required type="text" class="form-control" form="AccountCreate" placeholder="ex. 301143052" id="studentNum" name="sid">
+                  </div> 
+                </td>
+              </tr>
+              <tr> 
+                <td>                
+                  <div class="input-group">
+                    <div class="input-group-addon" id="login_area">E-mail</div>
+                    <input required type="text" class="form-control" form="AccountCreate" placeholder="username@host.com" id="email" name="email">
+                  </div>
+                </td>
+                <td>                
+                  <div class="input-group">
+                    <div class="input-group-addon" id="login_area">Date of Birth</div>
+                    <div class="form-group"> 
+                      <input required class="form-control" id="date" form="AccountCreate" name="date" placeholder="MM/DD/YYY" type="text"/>
+                    </div>
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>                
+                  <div class="input-group">
+                    <div class="input-group-addon" id="login_area">Gender</div>
+                    <select required class="form-control" id="sel1" form="AccountCreate" name="gender">
+                      <option value="1">Male</option>
+                      <option value="2">Female</option>
+                      <option value="3">Other</option>
+                      
+                    </select>
+                  </div>
+                </td>
+                <td>                
+                  <div class="input-group">
+                    <div class="input-group-addon" id="login_area">Profile Image</div>
+                    <input type="file" name="filename" form="AccountCreate" accept="image/jpeg, image/png">
+                  </div>
+                </td>
+              </tr>
+              <tr>
+                <td>
+                  <div class="input-group">
+                    <div class="input-group-addon" id="login_area">Password</div>
+                    <input type="password" name="password" form="AccountCreate">
+                  </div>
+                </td>
+              </tr> 
+            </tbody>
+          </table>
+          <div class="input-group" style="text-align:center">
+            <input class="btn btn-primary" type="submit" value="Submit" style="width:35%">
+          </div>
         </form>
       </div>
     </div>
-  </body>
-</html>
+  {% endblock %}  

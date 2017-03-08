@@ -1,0 +1,78 @@
+<div class="container-fluid">
+  <div class="row row-eq-height" id="nav">
+    <div class="col-xs-5 col-md-5 col-lg-5" id="nav">
+      <div class="page-header">
+        <h1>PodRez<small> <i>Where the future goes to grow</i> </small></h1>
+      </div>
+    </div>
+    <div class="col-xs-7 col-md-7 col-lg-7" id="nav">
+      <nav class="navbar navbar-default">
+        <div class="container-fluid">
+          <!-- Brand and toggle get grouped for better mobile display -->
+          <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+              <span class="sr-only">Toggle navigation</span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+              <span class="icon-bar"></span>
+            </button>
+            <a href="/" class="navbar-left"><img src="/leaf.bmp"></a>
+          </div>
+
+          <!-- Collect the nav links, forms, and other content for toggling -->
+          <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-right">
+              <!-- BEGIN CONSTRUCTION OF NAVBAR BASED ON USER TYPE
+                user.role == 1 -> student
+                user.role == 2 -> reslife
+                user.role == 3 -> housing
+                user.role == 99 -> Super duper admin
+                user == null -> not logged in
+
+                The first three will have customized navbars defined after this comment block
+                -->
+      
+                {% if user %} <!-- If a user exists, then test the role, otherwise render the default navbar-->
+
+                  {% if user.role == 1 %}
+
+                    <li><a href="/students">My Profile</a></li>
+                    <li><a href="/students/programs">My Events</a></li>
+                    <li><a href="/students/calendar">Calendar</a></li>
+                    <li><a href="/students/equipment">Rentals</a></li>
+                    <li><a href="/students/application-status">Application</a></li>
+                    <li><a href="/students/maintenance">Maintenance</a></li>
+                    <li><a href="/logout">Log Out</a></li>
+
+                  {% elif user.role == 2 %}
+
+                    <li><a href="/reslife">My Account</a></li>
+                    <li><a href="/reslife/programs">Programs</a></li>
+                    <li><a href="/reslife/incidents">Incidents</a></li>
+                    <li><a href="/reslife/equipment">Equipment</a></li>
+                    <li><a href="/reslife/calendar">Calendar</a></li>
+                    <li><a href="/reslife/maintenance">Maintenance</a></li>
+                    <li><a href="/logout">Log Out</a></li>
+
+                  {% elif user.role == 3 %}
+
+                    <li><a href="/housing">My Account</a></li>
+                    <li><a href="/housing/applications">Applications</a></li>
+                    <li><a href="/housing/buildings">Buildings</a></li>
+                    <li><a href="/housing/rooms">Rooms</a></li>
+                    <li><a href="/housing/equipment">Equipment</a></li>
+                    <li><a href="/housing/maintenance">Maintenance</a></li>
+                    <li><a href="/logout">Log Out</a></li>
+
+                  {% endif %}
+                {% else %}
+
+                {% endif %}
+            </ul>
+          </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+      </nav>
+    </div>
+  </div>
+</div>
+

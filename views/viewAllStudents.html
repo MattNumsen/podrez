@@ -1,0 +1,35 @@
+{% extends 'outer.html' %}  
+{% block body %}
+	{% include 'header.html' %}
+
+
+	<div class="container" id="viewAllTemplate">
+
+		<h2>Students</h2>
+
+		<table id="data-table" class="table table-striped table-bordered" width="100%" cellspacing="0">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Student Number</th>
+                <th>Room</th>
+            </tr>
+        </thead>
+        
+		<tbody>
+
+			{% for std in student_info %}	
+			<!--std[i] = sid, firstname, lastname, description, roomID		-->
+				<tr>
+					<td><a href="/reslife/viewStudent/{{ std.sid }}">{{ std.firstname }} {{ std.lastname }}</a></td>
+					<td>{{ std.sid }} </td>
+					<td>{{ std.description }} {{ std.roomid }} </td>
+				</tr>
+
+			{% endfor %}
+		</tbody>
+    </table>
+	</div>
+
+
+{% endblock %}

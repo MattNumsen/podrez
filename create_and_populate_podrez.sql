@@ -10,6 +10,7 @@ CREATE TABLE roles (
 
 CREATE TABLE podUser (
 	podID SERIAL PRIMARY KEY,
+	password VARCHAR NOT NULL,
 	role integer,
 	FOREIGN KEY (role) REFERENCES roles (role)
 );
@@ -67,6 +68,7 @@ CREATE TABLE application (
 	applicationID SERIAL PRIMARY KEY, 
 	SID INTEGER,
 	semester INTEGER,
+	submitted DATE,
 	info JSONB,
 	FOREIGN KEY (SID) REFERENCES studentAccount (SID)
 );
@@ -105,6 +107,7 @@ CREATE TABLE maintRequest (
 	podID INTEGER NOT NULL, 
 	buildingID VARCHAR, 
 	roomID VARCHAR NOT NULL,
+	submitted DATE NOT NULL,
 	info JSONB,
 	FOREIGN KEY (roomID, buildingID) REFERENCES room (roomID, buildingID), 	
 	FOREIGN KEY (podID) REFERENCES podUser (podID)
@@ -112,8 +115,14 @@ CREATE TABLE maintRequest (
 
 CREATE TABLE incident (
 	incidentID SERIAL PRIMARY KEY, 
-	incDate DATE, 
-	info JSONB
+	resID_owner VARCHAR NOT NULL,
+	resID_creater VARCHAR NOT NULL, 
+	podID INTEGER NOT NULL, 
+	submitted DATE NOT NULL,
+	info JSONB,
+	FOREIGN KEY(podID) REFERENCES podUser (podID),
+	FOREIGN KEY(resID_owner) REFERENCES reslifeAccount (resID),
+	FOREIGN KEY(resID_creater) REFERENCES reslifeAccount (resID)
 );
 
 CREATE TABLE account_incident (
@@ -134,6 +143,7 @@ CREATE TABLE rentalAgreement (
 	eqRentalID SERIAL PRIMARY KEY,
 	podID INTEGER NOT NULL, 
 	rentalDate DATE NOT NULL, 
+	submitted DATE NOT NULL,
 	FOREIGN KEY (podID) REFERENCES podUser (podID)
 );
 
@@ -146,22 +156,31 @@ CREATE TABLE equipment_rentalAgreement (
 );
 
 CREATE TABLE program (
-	programID SERIAL PRIMARY KEY, 
-	info JSONB
+	programID SERIAL PRIMARY KEY,
+	resID_owner VARCHAR NOT NULL,
+	resID_creater VARCHAR NOT NULL, 
+	podID INTEGER NOT NULL, 
+	submitted DATE NOT NULL,
+	info JSONB,
+	FOREIGN KEY(podID) REFERENCES podUser (podID),
+	FOREIGN KEY(resID_owner) REFERENCES reslifeAccount (resID),
+	FOREIGN KEY(resID_creater) REFERENCES reslifeAccount (resID)
 );
 
 CREATE TABLE account_program (
 	resID VARCHAR NOT NULL, 
 	programID INTEGER NOT NULL, 
 	FOREIGN KEY (resID) REFERENCES reslifeAccount (resID),
-	FOREIGN KEY (programID) REFERENCES program (programID)
+	FOREIGN KEY (programID) REFERENCES program (programID),
+	PRIMARY KEY (resID, programID)
 );
 
 CREATE TABLE attending (
 	podID INTEGER NOT NULL, 
 	programID INTEGER NOT NULL,
 	FOREIGN KEY (podID) REFERENCES podUser (podID),
-	FOREIGN KEY (programID) REFERENCES program (programID)
+	FOREIGN KEY (programID) REFERENCES program (programID),
+	PRIMARY KEY (podID, programID)
 );
 
 
@@ -171,8 +190,22 @@ RETURNS void AS $BODY$
 DECLARE
 _podID INTEGER;
 BEGIN
-	INSERT INTO podUser (role)
-	VALUES (1) RETURNING podID INTO _podID;
+	INSERT INTO podUser (role, password)
+	VALUES (1, '$2a$10$Fuur7DqgFCZJGmT1TuPE1.yVVL59gsc6HIksQCDk9OCesYyxQpnkG') RETURNING podID INTO _podID;
+
+	INSERT INTO studentAccount (podID, firstName, lastName, preferredName, birthdate, SID, age, gender)
+	VALUES (_podID, firstName, lastName, preferredName, birthdate, SID, age, gender);
+
+END;
+$BODY$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION insert_student(firstName VARCHAR, lastName VARCHAR, preferredName VARCHAR, SID INTEGER, password VARCHAR, age INTEGER, birthdate DATE, gender VARCHAR) 
+RETURNS void AS $BODY$
+DECLARE
+_podID INTEGER;
+BEGIN
+	INSERT INTO podUser (role, password)
+	VALUES (1, password) RETURNING podID INTO _podID;
 
 	INSERT INTO studentAccount (podID, firstName, lastName, preferredName, birthdate, SID, age, gender)
 	VALUES (_podID, firstName, lastName, preferredName, birthdate, SID, age, gender);
@@ -187,8 +220,8 @@ RETURNS void AS $BODY$
 DECLARE
 _podID INTEGER;
 BEGIN
-	INSERT INTO podUser (role)
-	VALUES (2) RETURNING podID INTO _podID;
+	INSERT INTO podUser (role, password)
+	VALUES (2, '$2a$10$Fuur7DqgFCZJGmT1TuPE1.yVVL59gsc6HIksQCDk9OCesYyxQpnkG') RETURNING podID INTO _podID;
 
 	INSERT INTO reslifeAccount (podID, resID, firstName, lastName, preferredName, permission, StudentID)
 	VALUES (_podID, resID, firstName, lastName, preferredName, permission, StudentID);
@@ -202,8 +235,8 @@ RETURNS void AS $BODY$
 DECLARE
 _podID INTEGER;
 BEGIN
-	INSERT INTO podUser (role)
-	VALUES (3) RETURNING podID INTO _podID;
+	INSERT INTO podUser (role, password)
+	VALUES (3, '$2a$10$Fuur7DqgFCZJGmT1TuPE1.yVVL59gsc6HIksQCDk9OCesYyxQpnkG') RETURNING podID INTO _podID;
 
 
 	INSERT INTO housingAccount (podID, housingID, firstName, lastName, permission, studentID)
@@ -217,8 +250,8 @@ RETURNS void AS $BODY$
 DECLARE
 _podID INTEGER;
 BEGIN
-	INSERT INTO podUser (role)
-	VALUES (3) RETURNING podID INTO _podID;
+	INSERT INTO podUser (role, password)
+	VALUES (3, '$2a$10$Fuur7DqgFCZJGmT1TuPE1.yVVL59gsc6HIksQCDk9OCesYyxQpnkG') RETURNING podID INTO _podID;
 
 
 	INSERT INTO housingAccount (podID, housingID, firstName, lastName, permission)
@@ -263,14 +296,13 @@ VALUES (1, 'student'),
 
 
 INSERT INTO building (buildingID, description)
-VALUES ('BL2','Bud Light Tower 1'),
-('BL1','Bud Light Tower 2'),
+VALUES ('BL1','Bud Light Tower 1'),
+('BL2','Bud Light Tower 2'),
 ('WCTV','Wildcat Tent Village'),
 ('SAHH','Stella Artois High Horse');
 
 INSERT INTO room (roomID, buildingID)
 VALUES 
-('RoomID','BuildingID'),
 ('100','BL1'),
 ('101','BL1'),
 ('102','BL1'),
@@ -453,188 +485,6 @@ VALUES
 ('723','BL1'),
 ('724','BL1'),
 ('725','BL1'),
-('100','BL2'),
-('101','BL2'),
-('102','BL2'),
-('103','BL2'),
-('104','BL2'),
-('105','BL2'),
-('106','BL2'),
-('107','BL2'),
-('108','BL2'),
-('109','BL2'),
-('110','BL2'),
-('111','BL2'),
-('112','BL2'),
-('113','BL2'),
-('114','BL2'),
-('115','BL2'),
-('116','BL2'),
-('117','BL2'),
-('118','BL2'),
-('119','BL2'),
-('120','BL2'),
-('121','BL2'),
-('122','BL2'),
-('123','BL2'),
-('124','BL2'),
-('125','BL2'),
-('200','BL2'),
-('201','BL2'),
-('202','BL2'),
-('203','BL2'),
-('204','BL2'),
-('205','BL2'),
-('206','BL2'),
-('207','BL2'),
-('208','BL2'),
-('209','BL2'),
-('210','BL2'),
-('211','BL2'),
-('212','BL2'),
-('213','BL2'),
-('214','BL2'),
-('215','BL2'),
-('216','BL2'),
-('217','BL2'),
-('218','BL2'),
-('219','BL2'),
-('220','BL2'),
-('221','BL2'),
-('222','BL2'),
-('223','BL2'),
-('224','BL2'),
-('225','BL2'),
-('300','BL2'),
-('301','BL2'),
-('302','BL2'),
-('303','BL2'),
-('304','BL2'),
-('305','BL2'),
-('306','BL2'),
-('307','BL2'),
-('308','BL2'),
-('309','BL2'),
-('310','BL2'),
-('311','BL2'),
-('312','BL2'),
-('313','BL2'),
-('314','BL2'),
-('315','BL2'),
-('316','BL2'),
-('317','BL2'),
-('318','BL2'),
-('319','BL2'),
-('320','BL2'),
-('321','BL2'),
-('322','BL2'),
-('323','BL2'),
-('324','BL2'),
-('325','BL2'),
-('400','BL2'),
-('401','BL2'),
-('402','BL2'),
-('403','BL2'),
-('404','BL2'),
-('405','BL2'),
-('406','BL2'),
-('407','BL2'),
-('408','BL2'),
-('409','BL2'),
-('410','BL2'),
-('411','BL2'),
-('412','BL2'),
-('413','BL2'),
-('414','BL2'),
-('415','BL2'),
-('416','BL2'),
-('417','BL2'),
-('418','BL2'),
-('419','BL2'),
-('420','BL2'),
-('421','BL2'),
-('422','BL2'),
-('423','BL2'),
-('424','BL2'),
-('425','BL2'),
-('500','BL2'),
-('501','BL2'),
-('502','BL2'),
-('503','BL2'),
-('504','BL2'),
-('505','BL2'),
-('506','BL2'),
-('507','BL2'),
-('508','BL2'),
-('509','BL2'),
-('510','BL2'),
-('511','BL2'),
-('512','BL2'),
-('513','BL2'),
-('514','BL2'),
-('515','BL2'),
-('516','BL2'),
-('517','BL2'),
-('518','BL2'),
-('519','BL2'),
-('520','BL2'),
-('521','BL2'),
-('522','BL2'),
-('523','BL2'),
-('524','BL2'),
-('525','BL2'),
-('600','BL2'),
-('601','BL2'),
-('602','BL2'),
-('603','BL2'),
-('604','BL2'),
-('605','BL2'),
-('606','BL2'),
-('607','BL2'),
-('608','BL2'),
-('609','BL2'),
-('610','BL2'),
-('611','BL2'),
-('612','BL2'),
-('613','BL2'),
-('614','BL2'),
-('615','BL2'),
-('616','BL2'),
-('617','BL2'),
-('618','BL2'),
-('619','BL2'),
-('620','BL2'),
-('621','BL2'),
-('622','BL2'),
-('623','BL2'),
-('624','BL2'),
-('625','BL2'),
-('700','BL2'),
-('701','BL2'),
-('702','BL2'),
-('703','BL2'),
-('704','BL2'),
-('705','BL2'),
-('706','BL2'),
-('707','BL2'),
-('708','BL2'),
-('709','BL2'),
-('710','BL2'),
-('711','BL2'),
-('712','BL2'),
-('713','BL2'),
-('714','BL2'),
-('715','BL2'),
-('716','BL2'),
-('717','BL2'),
-('718','BL2'),
-('719','BL2'),
-('720','BL2'),
-('721','BL2'),
-('722','BL2'),
-('723','BL2'),
-('724','BL2'),
-('725','BL2'),
 ('100','BL2'),
 ('101','BL2'),
 ('102','BL2'),

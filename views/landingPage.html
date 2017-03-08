@@ -1,44 +1,6 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
-    <meta name="description" content="">
-    <meta name="author" content="">
-    <link rel="icon" href="/leaf.ico">
-
-    <title>PodRez - Welcome</title>
-
-    <script src="//ajax.googleapis.com/ajax/libs/angularjs/1.3.3/angular.min.js"></script>
-    <script src="//cdnjs.cloudflare.com/ajax/libs/angular.js/1.3.3/angular-route.min.js"></script>
-    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-    <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
-    <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
-    <script src="script.js"></script>
-
-    
-    <link rel="stylesheet" type="text/css" href="/stylesheets/index.css"/>
-    <link rel="stylesheet" type="text/css" href="/stylesheets/grid.css"/>
-    <link rel="stylesheet" type="text/css" href="/stylesheets/navbar.css"/> 
-
-
-    
-    <script> 
-    $(function(){
-      $("#header").load("/header.html"); 
-    });
-    </script> 
-
-
-  </head>
-
-  <body>
-    <!-- Header + Title -->
-    <div id="header"></div>
-
-
+{% extends 'outer.html' %}  
+  {% block body %}
+    {% include 'header.html' %}
 
     <div class="container">
       <div class="row" id="body">
@@ -46,16 +8,33 @@
           <div class="span4 collapse-group">
             <h1 href="#" style="text-align:center"><a data-toggle="collapse" data-target="#studentForm">Student</a></h1>
           <!-- STUDENT SIGN IN FORM -->
+            
+          {% if error1 %}
+            <div class="collapse in" id="studentForm">
+          {% else %}
             <div class="collapse" id="studentForm">
-              <form class="form-student-signin" style="display:all">
+          {% endif %}
+
+              <form id="studentSignIn" class="form-student-signin" method="post" action="/students" style="display:all">
+
                 <h2 class="form-student-signin-heading">Please sign in</h2>
+
                 <label for="studInputID" class="sr-only">Login</label>
-                <input type="text" id="studInputID" class="form-control" placeholder="Student ID" required autofocus>
+                <input name="username" type="text" form="studentSignIn" id="studInputID" class="form-control" placeholder="Student ID" required autofocus>                
+
                 <label for="studInputPassword" class="sr-only">Password</label>
-                <input type="password" id="studInputPassword" class="form-control" placeholder="Password" required>
-                <button class="btn btn-lg btn-primary btn-block" type="submit" id="studSignIn">Sign in</button>
+                <input name="password" type="password" form="studentSignIn" id="studInputPassword" class="form-control" placeholder="Password" required>
+
+                <input class="btn btn-lg btn-primary btn-block" form="studentSignIn" type="submit" value="Submit" id="studSignIn">
+
+                {% if error1 %}
+                <div class="alert alert-danger">
+                  Incorrect Username or Password
+                </div>
+                {% endif %} 
+
               </form>
-              <h2 class="form-signing-middle">Don't have an account?</h2>
+              <h2 class="form-signin-middle">Don't have an account?</h2>
               <form action="createAccount">
                 <button class="btn btn-lg btn-primary btn-block" id="createAccount" >Create Account</button>
               </form> 
@@ -67,15 +46,30 @@
             <h1 href="#" style="text-align:center"><a data-toggle="collapse" data-target="#rezlifeForm">Rezlife</a></h1>
 
           <!-- RESLIFE SIGN IN FORM -->
+        {% if error2 %}
+          <div class="collapse in" id="rezlifeForm">
+        {% else %}
           <div class="collapse" id="rezlifeForm">
-            <form class="form-reslife-signin" style="display:all">
-              <h2 class="form-reslife-signin-heading">Please sign in</h2>
-              <label for="resInputID" class="sr-only">Login</label>
-              <input type="text" id="resInputID" class="form-control" placeholder="Reslife ID" required autofocus>
-              <label for="resInputPassword" class="sr-only">Password</label>
-              <input type="password" id="resInputPassword" class="form-control" placeholder="Password" required>
-              <button class="btn btn-lg btn-primary btn-block" type="submit" id="resSignIn">Sign in</button>
-            </form>
+        {% endif %}
+
+            <form id="reslifeSignIn" class="form-reslife-signin" method="post" action="/reslife" style="display:all">
+                <h2 class="form-student-signin-heading">Please sign in</h2>
+
+                <label for="resInputID" class="sr-only">Login</label>
+                <input name="username" type="text" form="reslifeSignIn" id="resInputID" class="form-control" placeholder="Reslife ID" required autofocus>
+
+                <label for="reslifeInputPassword" class="sr-only">Password</label>
+                <input name="password" type="password" form="reslifeSignIn" id="reslifeInputPassword" class="form-control" placeholder="Password" required>
+
+                <input class="btn btn-lg btn-primary btn-block" form="reslifeSignIn" type="submit" value="Submit" id="reslifeSignIn">
+
+                {% if error2 %}
+                <div class="alert alert-danger">
+                  Incorrect Username or Password
+                </div>
+                {% endif %} 
+
+              </form>
           </div>
         </div>
         <div class="span4 collapse-group">
@@ -83,18 +77,31 @@
             <h1 href="#" style="text-align:center"><a data-toggle="collapse" data-target="#housingForm">Housing</a></h1>
 
            <!-- Housing SIGN IN FORM -->
-          <div class="collapse" id="housingForm">
-            <form class="form-housing-signin" style="display:all">
-              <h2 class="form-housing-signin-heading">Please sign in</h2>
-              <label for="housInputID" class="sr-only">Login</label>
-              <input type="text" id="housInputID" class="form-control" placeholder="Staff ID" required autofocus>
-              <label for="housInputPassword" class="sr-only">Password</label>
-              <input type="password" id="housInputPassword" class="form-control" placeholder="Password" required>
-              <button class="btn btn-lg btn-primary btn-block" type="submit" id="housSignIn">Sign in</button>
-            </form>
+          {% if error3 %}
+            <div class="collapse in" id="housingForm">
+          {% else %}
+            <div class="collapse" id="housingForm">
+          {% endif %}
+            <form id="housingSignIn" class="form-housing-signin" method="post" action="/housing" style="display:all">
+                <h2 class="form-housing-signin-heading">Please sign in</h2>
+
+                <label for="housingInputID" class="sr-only">Login</label>
+                <input name="username" type="text" form="housingSignIn" id="housingInputID" class="form-control" placeholder="Housing ID" required autofocus>
+
+                <label for="housingInputPassword" class="sr-only">Password</label>
+                <input name="password" type="password" form="housingSignIn" id="housingInputPassword" class="form-control" placeholder="Password" required>
+
+                <input class="btn btn-lg btn-primary btn-block" form="housingSignIn" type="submit" value="Submit" id="housingSignIn">
+
+                {% if error3 %}
+                <div class="alert alert-danger">
+                  Incorrect Username or Password
+                </div>
+                {% endif %} 
+
+              </form>
           </div>
         </div>
       </div>
     </div>
-  </body>
-</html>
+    {% endblock %}
