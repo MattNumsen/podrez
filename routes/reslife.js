@@ -85,21 +85,13 @@ router.get('/programs', auth.ensureReslifeAuthenticated, db.getAllPrograms);
 router.get('/program/:programID', auth.ensureReslifeAuthenticated, db.getProgram);
 
 
-router.get('/viewStudent/:studID', function (req, res, next) {
-  res.json({
-    message:"GET to /reslife/viewStudent/studID",
-    studID: req.params.studID
-  }); 
-});
+router.get('/viewStudent/:studID', auth.ensureReslifeAuthenticated, db.getStudent);
 
 router.get('/viewStudents/', auth.ensureReslifeAuthenticated, db.getAllStudents);
 
 
-router.get('/submitIncident', function (req, res, next) {
-  res.json({
-    message:"GET to /reslife/submitIncident"
-  }); 
-});
+router.get('/submitIncident', auth.ensureReslifeAuthenticated, db.incidentCreationForm);
+
 router.post('/submitIncident', function (req, res, next) {
   res.json({
     message:"POST to /reslife/submitIncident"

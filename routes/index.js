@@ -13,9 +13,9 @@ var SALT_WORK_FACTOR = 10;
 //user: req.user --> This must be in every res.render parameter set
 
 
-router.get('/test/:programID', db.getProgram);
 
-router.get('/test', db.getAllStudents);
+
+router.get('/test', db.incidentCreationForm);
 router.get('/', function(req, res, next) {
 
 	var er1, er2, er3;

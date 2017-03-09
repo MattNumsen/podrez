@@ -63,8 +63,7 @@ router.post('/', function (req, res, next) {
   }) (req, res);
 });
 
-router.get('/profile/:id', auth.ensureStudentAuthenticated, db.getStudent); //TODO---ADD Authentication Barrier
-
+router.get('/profile/:studID', auth.ensureStudentAuthenticated, db.getStudent); //TODO---ADD Authentication Barrier
 
 router.get('/profile', function(req, res, next) {
 	console.log("Get Profile" + req.session);
@@ -78,11 +77,9 @@ router.get('/profile', function(req, res, next) {
 	}
 });
 
-router.get('/program', function (req, res, next) {
-	res.json({
-		message:"GET to /student/program"
-	});	
-});
+router.get('/program/:programID', auth.ensureStudentAuthenticated, db.getProgram);
+
+router.get('/programs', auth.ensureStudentAuthenticated, db.getAllPrograms);
 
 router.get('/apply', function (req, res, next) {
 	res.json({
@@ -102,11 +99,7 @@ router.get('/equipment', function (req, res, next) {
 	});	
 });
 
-router.get('/calendar', function (req, res, next) {
-	res.json({
-		message:"GET to /student/calendar"
-	});	
-});
+router.get('/calendar', auth.ensureStudentAuthenticated, db.getAllPrograms); //TODO - Make a calendar
 
 router.get('/maintenance', function (req, res, next) {
 	res.json({

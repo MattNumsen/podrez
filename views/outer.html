@@ -29,6 +29,7 @@
     <script src="https://cdn.datatables.net/1.10.13/js/jquery.dataTables.min.js"></script>
     <script src="https://cdn.datatables.net/1.10.13/js/dataTables.bootstrap.min.js"></script>
 
+
     <link rel="stylesheet" type="text/css" href="/stylesheets/index.css"/>
     <link rel="stylesheet" type="text/css" href="/stylesheets/grid.css"/>
     <link rel="stylesheet" type="text/css" href="/stylesheets/navbar.css"/> 
@@ -52,26 +53,31 @@
       date_input.datepicker(options);
     });
     </script>
+
     <script>
-    $(document).ready(function(){
-      var datepicker = $.fn.datepicker.noConflict();
+    $(function(){
+      var datepicker = $.fn.datepicker.noConflict;
       $.fn.bootstrapDP = datepicker;  
       $("#dp3").bootstrapDP();    
     });
     </script>
+
+    
 
     <script type="text/javascript">
         $(document).ready(function() {
             $(".select2").select2();
         });
     </script>  
+
     <script>
       $(document).ready(function() {
           $('#data-table').DataTable( {
-            "info": false 
+
           });
       } );
    </script>
+
     <script>
     $(document).ready(function() {
           $("#building").change(function(){

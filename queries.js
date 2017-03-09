@@ -28,9 +28,55 @@ db.connect()
     .then(function (obj) {
         obj.done(); // success, release the connection;
     })
-    .catch(function (error) {
-        console.log("ERROR:", error.message || error);
+    .catch(function (err) {
+        console.log("ERROR:", err.message || err);
     });
+
+
+
+
+
+
+
+
+
+
+
+
+function incidentCreationForm(req, res, next) {
+	//What do we need for the form? List of all students (with agreements) NAMES and STUDENT IDs
+	//list of all other CAs and ACs and RLCs names (and IDs?)
+	//list of all available rooms and buildings 
+	//contract when imported
+	//three different objects. stud_list, res_list and room_list. 
+
+	db.many('select firstname, lastname, sid from studentAccount')
+	.then(function(stud_list) {
+		db.many('select firstname, lastname, resid, permission from reslifeAccount')
+		.then(function(res_list) {
+			db.many('select roomID, room.buildingID, description from room, building where room.buildingID = building.buildingID')
+			.then(function(room_list) {
+				//at this point, we have the lists. Render the page with those lists
+				res.render('createIncidentReport', {
+					stud_list: stud_list, 
+					res_list: res_list, 
+					room_list: room_list, 
+					user: req.user, 
+					title: 'Create Incident'
+				});
+			})
+			.catch(function(err) {
+				return next(err);
+			});
+		})
+		.catch(function(err) {
+			return next(err);
+		});
+	})
+	.catch(function(err) {
+		return next(err);
+	});
+}
 
 function programSubmission(req, res, next) {
 	
@@ -140,12 +186,10 @@ function getAllStudents(req, res, next) {
 }
 
 
-function getStudent(req, res, next) {
-	var studID = parseInt(req.params.id);
+function getStudent(req, res, next) {  //TODO - add things like what building/room they are in, programs they are attending, incidents they've been involved in etc
+	var studID = parseInt(req.params.studID);
 	db.one('select * from studentAccount where sid = $1', studID)
 	.then(function(data) {
-		console.log("inside Get Student");
-		console.log (req.user);
 		res.render('studentProfile', {
 				studAccount: data, 
 				user: req.user, 
@@ -183,7 +227,6 @@ function programProposal(req, res, next) {
 		reslifeUser=data1;
 		db.many('select * from building')
 		.then(function(data2){
-			console.log(data2);
 			res.render('createProgram', {
 				resUser: reslifeUser,
 				buildings: data2, 
@@ -266,7 +309,11 @@ function getProgram(req, res, next) {
 	});
 }
 
+
+
 module.exports = {
+	
+	incidentCreationForm: incidentCreationForm,
 	getAllPrograms: getAllPrograms,
 	getProgram: getProgram,
 	programSubmission: programSubmission, 

@@ -5,48 +5,50 @@
 
 	<div class="container">
 		<div class="jumbotron" id="mainBody-jumbo">
-      <h2>Propose a Program</h2>
-      <form id="programCreateForm" method="post" action="/reslife/createProgram" name="program"> 
+      <h2>Submit an Incident Report</h2>
+      <form id="IncidentForm" method="post" action="/reslife/submitIncident"> 
 
         <table class="table">
           <tbody>
 
             <tr>
-              <td>
+              <td colspan="2" class="fullwidth">
                 <div class="input-group">
-                  <div class="input-group-addon">Name of Program</div>
-                  <input type="text" class="form-control" placeholder="Think of something catchy!" id="programTitle" name="title" form="programCreateForm">
+                  <div class="input-group-addon">Title</div>
+                  <input type="text" class="form-control" placeholder="Be Concise, but descriptive - What, Where, When" id="incidentTitle" name="title" form="IncidentForm">
                 </div>
               </td>
-
+            </tr>
+            <tr>
               <td>
                 <div class="input-group">
-                  <div class="input-group-addon">Type of Program</div>
+                  <div class="input-group-addon">Area of Incident</div>
                  
-                      <select class="select2" form="programCreateForm" name="type" style="min-width:20%; width:100%">
-                        <option value="1">Active</option>
-                        <option value="2">Passive</option>
-                        <option value="3">Other</option>
+                      <select class="select2" form="IncidentForm" name="type" style="min-width:20%; width:100%">
+
+                        {% for room in room_list %}
+                        	<option value="{{ room.buildingid }} {{ room.roomid }}">{{ room.description }}: {{room.buildingid}}-{{ room.roomid }}</option>
+                        {% endfor %}
+                       
                       </select>
 
                 </div>
               </td>
-            </tr>
 
-            <tr>
               <td>                
                 <div class="input-group">
-                  <div class="input-group-addon" id="login_area">Date of Program</div>
+                  <div class="input-group-addon" id="login_area">Date of Incident</div>
                   <div class="form-group"> <!-- Date input -->
-                    <input class="form-control" id="dp3" form="programCreateForm" name="date" placeholder="MM/DD/YYY" type="text"/>
+                    <input class="form-control" id="dp3" form="IncidentForm" name="date" placeholder="MM/DD/YYYY" type="text"/>
                   </div>
                 </div>
               </td>
-
+              </tr>
+			  <tr>
               <td>                
                 <div class="input-group">
                   <div class="input-group-addon">Target Building</div>
-                  <select id="building" class="select2" multiple="multiple" form="programCreateForm" name="building" style="min-width:20%; width:100%">
+                  <select id="building" class="select2" multiple="multiple" form="IncidentForm" name="building" style="min-width:20%; width:100%">
 
 
                     <!-- Handlebarify here to add ALL ENTRIES IN BUILDING -->
@@ -59,14 +61,14 @@
                     
                   </select>
                 </div>
-                <input type='hidden' id="buildingCount" form="programCreateForm" name="buildingCount" value=""/>
+                <input type='hidden' id="buildingCount" form="IncidentForm" name="buildingCount" value=""/>
               </td>
             </tr>
             <tr>
               <td colspan="2" class="fullwidth">                
                 <div class="input-group">
                   <div class="input-group-addon">Collaborators</div>
-                  <select id="collaborators" class="select2" multiple="multiple" form="programCreateForm" name="collaborators" style="min-width:20%;width:100%">
+                  <select id="collaborators" class="select2" multiple="multiple" form="IncidentForm" name="collaborators" style="min-width:20%;width:100%">
 
 
                     <!-- Handlebarify here to add ALL ENTRIES IN RESIDENCE STAFF -->
@@ -82,7 +84,7 @@
 
                   </select>
                 </div>
-                <input type='hidden' id="collabCount" form="programCreateForm" name="collabCount" value=""/>
+                <input type='hidden' id="collabCount" form="IncidentForm" name="collabCount" value=""/>
               </td>
             </tr> 
 
@@ -93,7 +95,7 @@
               <td>
                 <div class="input-group">
                   <div class="input-group-addon">Supervising AC</div>
-                  <select class="select2" form="programCreateForm" name="superAC" style="min-width:20%;width:100%">
+                  <select class="select2" form="IncidentForm" name="superAC" style="min-width:20%;width:100%">
 
                   {% for usr in resUser%}
                     {% if usr.permission == 2 %} 
@@ -112,7 +114,7 @@
               <td>
                 <div class="input-group">
                   <div class="input-group-addon">Supervising RLC</div>
-                  <select class="select2" form="programCreateForm" name="superRLC" style="width:100%">
+                  <select class="select2" form="IncidentForm" name="superRLC" style="width:100%">
 
                   {% for usr in resUser%}
                     {% if usr.permission == 3 %} 
@@ -130,7 +132,7 @@
               <td colspan="2" class="fullwidth">
                 <div class="input-group">
                   <div class="input-group-addon">Program Description</div>
-                  <textarea class="form-control" form="programCreateForm" rows="8" name="description"></textarea>
+                  <textarea class="form-control" form="IncidentForm" rows="8" name="description"></textarea>
                 </div>
               </td>
             </tr>
@@ -139,7 +141,7 @@
               <td colspan="2" class="fullwidth">
                 <div class="input-group">
                   <div class="input-group-addon">Needs Addressed</div>
-                  <textarea class="form-control" form="programCreateForm" rows="4" name="needsMet"></textarea>
+                  <textarea class="form-control" form="IncidentForm" rows="4" name="needsMet"></textarea>
                 </div>
               </td>
             </tr>
@@ -147,7 +149,7 @@
               <td>
                 <div class="input-group">
                   <div class="input-group-addon">Risk Factors</div>
-                  <textarea class="form-control" form="programCreateForm" rows="4" name="riskFactors"></textarea>
+                  <textarea class="form-control" form="IncidentForm" rows="4" name="riskFactors"></textarea>
                 </div>
               </td>
 
@@ -156,10 +158,10 @@
                   <div class="input-group-addon">Budget Breakdown<br><br>
                     <div class="input-group">
                       Total ($): 
-                      <input type="number" name="budgetVal" form="programCreateForm" min="0.00" step="0.01" max="2500" value="0.00" />
+                      <input type="number" name="budgetVal" form="IncidentForm" min="0.00" step="0.01" max="2500" value="0.00" />
                     </div>
                   </div>
-                  <textarea class="form-control" form="programCreateForm" rows="4" name="budgetDesc"></textarea>
+                  <textarea class="form-control" form="IncidentForm" rows="4" name="budgetDesc"></textarea>
                 </div>
               </td>
             </tr>

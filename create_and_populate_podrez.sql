@@ -4,14 +4,14 @@ CREATE DATABASE podrez;
 \c podrez;
 
 CREATE TABLE roles (
-	role integer PRIMARY KEY,
+	role INTEGER PRIMARY KEY,
 	description VARCHAR
 );
 
 CREATE TABLE podUser (
 	podID SERIAL PRIMARY KEY,
 	password VARCHAR NOT NULL,
-	role integer,
+	role INTEGER,
 	FOREIGN KEY (role) REFERENCES roles (role)
 );
 
@@ -64,13 +64,20 @@ CREATE TABLE room (
 	PRIMARY KEY (roomID, buildingID)
 );
 
+
+CREATE TABLE semester (
+	semcode SERIAL PRIMARY KEY, 
+	description VARCHAR NOT NULL
+);
+
 CREATE TABLE application (
 	applicationID SERIAL PRIMARY KEY, 
-	SID INTEGER,
-	semester INTEGER,
+	SID INTEGER NOT NULL,
+	semcode INTEGER NOT NULL,
 	submitted DATE,
 	info JSONB,
-	FOREIGN KEY (SID) REFERENCES studentAccount (SID)
+	FOREIGN KEY (SID) REFERENCES studentAccount (SID),
+	FOREIGN KEY (semcode) REFERENCES semester (semcode)
 );
 
 CREATE TABLE agreement (
@@ -917,3 +924,8 @@ SELECT insert_housingAccount('China85','China','Vache',2);
 SELECT insert_housingAccount('Ching86','Ching','Vacher',2);
 SELECT insert_housingAccount('Chiquita50','Chiquita','Vacheresse',1);
 SELECT insert_housingAccount('Chloe62','Chloe','Vachon',1,301177799);
+
+INSERT INTO semester (description) VALUES 
+('FA2017'),
+('SP2017'),
+('SU2017');
