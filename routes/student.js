@@ -66,10 +66,8 @@ router.post('/', function (req, res, next) {
 router.get('/profile/:studID', auth.ensureStudentAuthenticated, db.getStudent); //TODO---ADD Authentication Barrier
 
 router.get('/profile', function(req, res, next) {
-	console.log("Get Profile" + req.session);
 	if (req.isAuthenticated()){
 		var redir = '/students/profile/' + req.user.username;
-		console.log(req.user)
 		res.redirect(redir);
 	}
 	else {
@@ -81,11 +79,8 @@ router.get('/program/:programID', auth.ensureStudentAuthenticated, db.getProgram
 
 router.get('/programs', auth.ensureStudentAuthenticated, db.getAllPrograms);
 
-router.get('/apply', function (req, res, next) {
-	res.json({
-		message:"GET to /student/apply"
-	});	
-});
+router.get('/apply', auth.ensureStudentAuthenticated, db.ApplicationForm);
+router.post('/apply', auth.ensureStudentAuthenticated, db.submitApplication);
 
 router.get('/application-status', function (req, res, next) {
 	res.json({

@@ -31,3 +31,12 @@ table {
 
 .page-header > h1 > small{
 	color: rgba(133, 87, 5, .35);
+}
+
+.radio-inline {
+	display:inline-block; 
+	text-align:center;
+	padding-left:25px;
+	padding-right:25px;
+}
+

@@ -1,0 +1,146 @@
+{% extends 'outer.html' %}  
+{% block body %}
+	{% include 'header.html' %}
+
+
+	<div class="container">
+
+		<div class="jumbotron">
+				{% if err %}
+                <div class="alert alert-danger">
+                  {{ err }}
+                </div>
+                {% endif %}
+
+                {% if suc %}
+                <div class="alert alert-success">
+                  {{ suc }}
+                </div>
+                {% endif %}
+			<h2>Apply for Residence!</h2>
+			<form id="applicationForm" method="post" action="/students/apply">
+				<table class="table">
+					<tbody>
+						<tr>
+							<td colspan="2" class="fullwidth row row-eq-height">
+								<h4>Personal Information</h4>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="input-group">
+									<div class="input-group-addon">Name</div>
+				                  <input type="text" class="form-control" readonly id="name" name="name" form="applicationForm" value="{{ current_user.firstname }} {{ current_user.lastname }}" />
+				                </div>
+				            </td>
+				            <td>
+				                <div class="input-group">
+				                  <div class="input-group-addon">Student ID</div>
+				                  <input type="text" class="form-control" readonly id="sid" name="sid" form="applicationForm" value="{{ current_user.sid }}" />
+				                </div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="input-group">
+				                  <div class="input-group-addon">Birthdate</div>
+				                  <input type="text" class="form-control" readonly id="birthdate" name="birthdate" form="applicationForm" value="{{ current_user.birthday | date('MMMM Do, YYYY') }}" />
+				                </div>
+							</td>
+							<td>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2" class="fullwidth row row-eq-height">
+								<h4>Details and Preferences</h4>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div class="input-group">
+									<div class="input-group-addon">Building</div>
+									<select required id="building" class="select2" form="applicationForm" name="building" style="min-width:20%; width:100%; height:100%">
+									{% for bldng in building_list %}
+										<option value="{{ bldng.buildingid }}">{{ bldng.description }}</option>       
+									{% endfor %} 
+										<option value="0"> No Preference </option>                   
+									</select>
+								</div>
+							</td>
+							<td>
+								<div class="input-group">
+									<div class="input-group-addon">Semester</div>
+									<select required id="semcode" class="select2" form="applicationForm" name="semcode" style="min-width:20%; width:100%; height:100%">
+									{% for sem in semester_list %}
+										<option value="{{ sem.semcode }}">{{ sem.description }}</option>       
+									{% endfor %}                   
+									</select>
+								</div>
+							</td>
+						</tr> 
+						<tr>
+							<td colspan="2" class="fullwidth row row-eq-height">
+								<h4>For you personally, how important are the following?</h4>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2" class="fullwidth row row-eq-height">	
+								<div class="input-group input-group-lg">
+					                <div class="input-group-addon">Academic Focus</div>
+									<label class="radio-inline">Very Important<br>
+										<input required type="radio" name="academic" value="5" form="applicationForm">
+									</label>
+									<label class="radio-inline">Somewhat Important<br>
+										<input required type="radio" name="academic" value="4" form="applicationForm">
+									</label>
+									<label class="radio-inline">Neutral<br>
+										<input required checked type="radio" name="academic" value="3" form="applicationForm">
+									</label>
+									<label class="radio-inline">Not Very Important<br>
+										<input required type="radio" name="academic" value="2" form="applicationForm">
+									</label>
+									<label class="radio-inline">Not Important<br>
+										<input required type="radio" name="academic" value="1" form="applicationForm">
+								    </label>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2" class="fullwidth row row-eq-height">
+							<div class="form-group">	
+								<div class="input-group input-group-lg">
+					                <div class="input-group-addon">Same Gender</div>
+									<label class="radio-inline" id="first">Very Important<br>
+										<input required type="radio" name="gender" value="5" form="applicationForm">
+									</label>
+									<label class="radio-inline">Somewhat Important<br>
+										<input required type="radio" name="gender" value="4" form="applicationForm">
+									</label>
+									<label class="radio-inline">Neutral<br>
+										<input required checked type="radio" name="gender" value="3" form="applicationForm">
+									</label>
+									<label class="radio-inline">Not Very Important<br>
+										<input required type="radio" name="gender" value="2" form="applicationForm">
+									</label>
+									<label class="radio-inline">Not Important<br>
+										<input required type="radio" name="gender" value="1" form="applicationForm">
+								    </label>
+								</div>
+							</div>
+							</td>
+						</tr>
+
+						<tr>
+							<td colspan="2" class="fullwidth row row-eq-height">
+								<h4>More options could go here fairly EASILY and be generateable via admin input</h4>
+							</td>							
+						</tr>
+					</tbody>
+				</table>
+				<input class="btn btn-primary" type="submit" value="Submit">
+			</form>
+		</div>
+	</div>
+
+
+{% endblock %}

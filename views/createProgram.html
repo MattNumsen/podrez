@@ -47,16 +47,9 @@
                 <div class="input-group">
                   <div class="input-group-addon">Target Building</div>
                   <select id="building" class="select2" multiple="multiple" form="programCreateForm" name="building" style="min-width:20%; width:100%">
-
-
-                    <!-- Handlebarify here to add ALL ENTRIES IN BUILDING -->
                     {% for bldng in buildings %}
-
-                      <option value="{{bldng.buildingid}}">{{ bldng.description }}</option>  
-                      
-                    {% endfor %}
-
-                    
+                      <option value="{{bldng.buildingid}}">{{ bldng.description }}</option>       
+                    {% endfor %}                    
                   </select>
                 </div>
                 <input type='hidden' id="buildingCount" form="programCreateForm" name="buildingCount" value=""/>

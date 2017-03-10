@@ -34,8 +34,90 @@ db.connect()
 
 
 
+/*-----------------------------------------
+
+TODO:
+perhaps include a DB entity with the information for each semesters intended questionaire information?
+
+could have a form for housing admin to input as many different questions as they'd like, 
+and then store those parameters as a JSON, which then is used by a templater to auto generate the form for them?
+
+neat potential. 
+
+-----------------------------------------*/
+function ApplicationForm (req, res, next) {
+	var err = req.session.error;
+	var suc = req.session.success;
+	delete req.session.error;
+	delete req.session.success;
+	db.many('select buildingID, description from building')
+	.then(function(buildings) {
+		db.one('select * from studentAccount where podID=$1', req.user.podid) 
+		.then(function(stud) {
+			db.many('select * from semester')
+			.then(function(semesters) {
+				res.render('ApplicationForm', {
+					user: req.user, 
+					title: 'Submit Applicaiton', 
+					building_list: buildings, 
+					current_user: stud, 
+					semester_list: semesters, 
+					err: err,
+					suc: suc
+					//so, the application can show a list of buildings for preference selection, the current student info (maybe link to past incidents and stuff?
+					//as well as a chance to pick which semesters to apply for. Semester should eventually include a date range that they represent as well...
+				});
+			})
+			.catch(function (err) {
+				return next(err);
+			});
+		})
+		.catch(function(err) {
+			return next(err);
+		});
+	})
+	.catch(function(err) {
+		return next(err);
+	});
+
+}
+
+function submitApplication (req, res, next) {
 
 
+	var submitted = new Date(Date.now());
+	db.one('select sid from studentAccount where podid = $1', req.user.podid)
+	.then(function(student){
+		if (student.sid != req.body.sid) {
+			req.session.error="You just tried to submit an application for someone else. How did you do that?"
+			res.redirect('/students/apply');
+		} else {
+			db.oneOrNone('SELECT sid, semcode from application where sid = $1 and semcode = $2', [student.sid, req.body.semcode])
+			.then(function(record) {
+				if (record == null){ //there is already an application - don't accept a new one!
+					db.none('INSERT INTO application (sid, semcode, submitted, info) VALUES ($1, $2, $3, $4)', [student.sid, req.body.semcode, submitted, req.body])
+					.then(function() {
+						req.session.success="You just applied for residence! Thanks!";
+						res.redirect('/students/apply');
+					})
+					.catch(function(err) {
+						return next(err);
+					});
+				} else {
+
+					req.session.error = "You've already submitted an application for that semester, but thanks for being so excited!";
+					res.redirect('/students/apply');
+				}
+			})
+			.catch(function(err) {
+				return next(err);
+			});
+		}
+	})
+	.catch(function(err) {
+		return next(err);
+	});
+}
 
 
 
@@ -94,15 +176,13 @@ function programSubmission(req, res, next) {
 	db.one('select resID from reslifeAccount where podID = $1', req.user.podid)
 	.then(function(resdata) {
 		db.tx(function(t) {
-	        // t = this
-	        // t.ctx = transaction context object
+
 	        return t.one('INSERT INTO program(info, resid_owner, resid_creater, submitted, podid) VALUES($1, $2, $2, $3, $4) RETURNING programid', [pass, resdata.resid, submitted, req.user.podid])
 	            .then(function (program) {
 	            	if (count == 1){
 	            		t.none('INSERT INTO account_program(programID, resID) VALUES($1, $2)', [program.programid, req.body.collaborators]);
 	            	} else {
 		            	for (i=0; i < count; i++){
-		            		console.log(req.body.collaborators[i]);
 		            		t.none('INSERT INTO account_program(programID, resID) VALUES($1, $2)', [program.programid, req.body.collaborators[i] ]);
 		            	} 
 		            }
@@ -126,9 +206,7 @@ function programSubmission(req, res, next) {
 	});
 }
 function createStudent(req, res, next) {
-	
-	console.log(req.body);
-	
+		
 	var salt = bcrypt.genSaltSync();
   	var hash = bcrypt.hashSync(req.body.password, salt);
 
@@ -142,7 +220,6 @@ function createStudent(req, res, next) {
     pass.age = age;
     pass.date = birthdate;
     pass.password = hash;
-    console.log(pass);
     db.oneOrNone('select insert_student(${fname}, ${lname}, ${midname}, ${sid}, ${password}, ${age}, ${date}, ${gender})', pass)
     //db.oneOrNone('select insert_student(${fname}, ${lname}, ${fname}, ${sid}, ${age}, ${date}, ${gender})', pass)
 	//db.func(insert_student, [req.body.fname, req.body.lname, req.body.fname, parseInt(req.body.sid), parseInt(age), req.body.date, req.body.gender])
@@ -312,7 +389,8 @@ function getProgram(req, res, next) {
 
 
 module.exports = {
-	
+	ApplicationForm: ApplicationForm,
+	submitApplication: submitApplication,
 	incidentCreationForm: incidentCreationForm,
 	getAllPrograms: getAllPrograms,
 	getProgram: getProgram,

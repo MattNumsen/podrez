@@ -31,7 +31,7 @@ router.get('/', function(req, res, next) {
   	error2: er2, 
   	error3: er3,
   	user: req.user
-  	}); //TODO---ADD Authentication Barrier (for navbar)
+  	}); 
 
 
 });

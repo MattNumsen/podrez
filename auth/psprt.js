@@ -27,7 +27,7 @@ var options = {
 
 /* Student Accont Authentication, called from logging in by post to /student (SUBJECT TO CHANGE) */
 passport.use('student', new LocalStrategy(options, function (username, password, done) {
-  console.log("passport STUDENT " + username);
+  //console.log("passport STUDENT " + username);
   // find the user
   	db.one('select * from studentAccount where sid = $1', username) 
   	.then(function (data) {
@@ -39,20 +39,20 @@ passport.use('student', new LocalStrategy(options, function (username, password,
 		      // validate their password against DB
 		      	var result = bcrypt.compareSync(password, user.password)		      
 		        if (result) {
-					console.log("passport: password correct");
+					//console.log("passport: password correct");
 					user.username = username;
 					done(null, user, {
 					message: 'Login successful!'
 					});
 		        } else {
-					console.log("passport: wrong password");
+					//console.log("passport: wrong password");
 					done(null, false, {
 					message: 'Your password does not match.'
 					});
 		        }		      
 		    } else {
 			// user does not exist
-				console.log("passport: user does not exist");
+				//console.log("passport: user does not exist");
 				done(null, null, {
 					message: 'This user does not exist.'
 				});
@@ -60,14 +60,14 @@ passport.use('student', new LocalStrategy(options, function (username, password,
 		})
 	  	.catch (function (err) {
 	  		if (err) {
-				console.log("passport: Error finding PODID from SID");
+				//console.log("passport: Error finding PODID from SID");
 				done(err);
 	    	}
 	  	});
 	})
   	.catch (function (err) {
   		if (err) {
-  			console.log("passport: Error finding SIDs");
+  			//console.log("passport: Error finding SIDs");
   			done(err);
   		}
   	});
@@ -77,7 +77,7 @@ passport.use('student', new LocalStrategy(options, function (username, password,
 
 /* Reslife User Account Authentication, called from logging in by post to /reslife (SUBJECT TO CHANGE) */
 passport.use('reslife', new LocalStrategy(options, function (username, password, done) {
-  console.log("passport RESLIFE " + username);
+  //console.log("passport RESLIFE " + username);
   // find the user
   	db.one('select * from reslifeAccount where resID = $1', username) 
   	.then(function (data) {
@@ -89,20 +89,20 @@ passport.use('reslife', new LocalStrategy(options, function (username, password,
 		      // validate their password against DB
 		      	var result = bcrypt.compareSync(password, user.password) //not all passwords are encrypted yet		      
 		        if (result) {
-					console.log("passport: password correct");
+					//console.log("passport: password correct");
 					user.username = username;
 					done(null, user, {
 					message: 'Login successful!'
 					});
 		        } else {
-					console.log("passport: wrong password");
+					//console.log("passport: wrong password");
 					done(null, false, {
 					message: 'Your password does not match.'
 					});
 		        }		      
 		    } else {
 			// user does not exist
-				console.log("passport: user does not exist");
+				//console.log("passport: user does not exist");
 				done(null, null, {
 					message: 'This user does not exist.'
 				});
@@ -110,14 +110,14 @@ passport.use('reslife', new LocalStrategy(options, function (username, password,
 		})
 	  	.catch (function (err) {
 	  		if (err) {
-				console.log("passport: Error finding PODID from ResID");
+				//console.log("passport: Error finding PODID from ResID");
 				done(err);
 	    	}
 	  	});
 	})
   	.catch (function (err) {
   		if (err) {
-  			console.log("passport: Error finding ResID");
+  			//console.log("passport: Error finding ResID");
   			done(err);
   		}
   	});
@@ -127,7 +127,7 @@ passport.use('reslife', new LocalStrategy(options, function (username, password,
 
 /* Housing User Account Authentication, called from logging in by post to /housing (SUBJECT TO CHANGE) */
 passport.use('housing', new LocalStrategy(options, function (username, password, done) {
-  console.log("passport HOUSING " + username);
+  //console.log("passport HOUSING " + username);
   // find the user
   	db.one('select * from housingAccount where housingID = $1', username) 
   	.then(function (data) {
@@ -139,20 +139,20 @@ passport.use('housing', new LocalStrategy(options, function (username, password,
 		      // validate their password against DB
 		      	var result = bcrypt.compareSync(password, user.password) //not all passwords are encrypted yet		      
 		        if (result) {
-					console.log("passport: password correct");
+					//console.log("passport: password correct");
 					user.username = username;
 					done(null, user, {
 					message: 'Login successful!'
 					});
 		        } else {
-					console.log("passport: wrong password");
+					//console.log("passport: wrong password");
 					done(null, false, {
 					message: 'Your password does not match.'
 					});
 		        }		      
 		    } else {
 			// user does not exist
-				console.log("passport: user does not exist");
+				//console.log("passport: user does not exist");
 				done(null, null, {
 					message: 'This user does not exist.'
 				});
@@ -160,14 +160,14 @@ passport.use('housing', new LocalStrategy(options, function (username, password,
 		})
 	  	.catch (function (err) {
 	  		if (err) {
-				console.log("passport: Error finding PODID from HousingID");
+				//console.log("passport: Error finding PODID from HousingID");
 				done(err);
 	    	}
 	  	});
 	})
   	.catch (function (err) {
   		if (err) {
-  			console.log("passport: Error finding HousingID");
+  			//console.log("passport: Error finding HousingID");
   			done(err);
   		}
   	});
@@ -184,8 +184,8 @@ passport.use('housing', new LocalStrategy(options, function (username, password,
 /*-- --*/
 // store session
 passport.serializeUser(function(user, done) {
-	console.log("In Serialize");
-	console.log(user);
+	//console.log("In Serialize");
+	//console.log(user);
   done(null, user);
 });
 
@@ -205,7 +205,7 @@ passport.deserializeUser(function(userbase, done){
 });
 
 function ensureStudentAuthenticated(req, res, next) {   
-	console.log('Student Authenticate?', req.isAuthenticated());   
+	//console.log('Student Authenticate?', req.isAuthenticated());   
 	if (req.isAuthenticated()) {     
 		if (req.user.role === 1) {
 			return next();   
@@ -223,7 +223,7 @@ function ensureStudentAuthenticated(req, res, next) {
 }
 
 function ensureReslifeAuthenticated(req, res, next) {   
-	console.log('Reslife Authenticate?', req.isAuthenticated());   
+	//console.log('Reslife Authenticate?', req.isAuthenticated());   
 	if (req.isAuthenticated()) {     
 		if (req.user.role === 2) {
 			return next();   
@@ -241,7 +241,7 @@ function ensureReslifeAuthenticated(req, res, next) {
 }
 
 function ensureHousingAuthenticated(req, res, next) {   
-	console.log('Housing Authenticate?', req.isAuthenticated());   
+	//console.log('Housing Authenticate?', req.isAuthenticated());   
 	if (req.isAuthenticated()) {     
 		if (req.user.role === 2) {
 			return next();   

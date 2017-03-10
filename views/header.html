@@ -36,17 +36,17 @@
 
                   {% if user.role == 1 %}
 
-                    <li><a href="/students">My Profile</a></li>
-                    <li><a href="/students/programs">My Events</a></li>
+                    <li><a href="/students">Profile</a></li>
+                    <li><a href="/students/programs">Events</a></li>
                     <li><a href="/students/calendar">Calendar</a></li>
                     <li><a href="/students/equipment">Rentals</a></li>
-                    <li><a href="/students/application-status">Application</a></li>
+                    <li><a href="/students/apply">Apply</a></li>
                     <li><a href="/students/maintenance">Maintenance</a></li>
                     <li><a href="/logout">Log Out</a></li>
 
                   {% elif user.role == 2 %}
 
-                    <li><a href="/reslife">My Account</a></li>
+                    <li><a href="/reslife">Account</a></li>
                     <li><a href="/reslife/programs">Programs</a></li>
                     <li><a href="/reslife/incidents">Incidents</a></li>
                     <li><a href="/reslife/equipment">Equipment</a></li>
@@ -56,7 +56,8 @@
 
                   {% elif user.role == 3 %}
 
-                    <li><a href="/housing">My Account</a></li>
+
+                    <li><a href="/housing">Account</a></li>
                     <li><a href="/housing/applications">Applications</a></li>
                     <li><a href="/housing/buildings">Buildings</a></li>
                     <li><a href="/housing/rooms">Rooms</a></li>
