@@ -45,11 +45,11 @@ and then store those parameters as a JSON, which then is used by a templater to 
 neat potential. 
 
 -----------------------------------------*/
-function ApplicationForm (req, res, next) {
-	var err = req.session.error;
-	var suc = req.session.success;
-	delete req.session.error;
-	delete req.session.success;
+function applicationForm (req, res, next) {
+	var err = req.session.err;
+	var suc = req.session.suc;
+	delete req.session.err;
+	delete req.session.suc;
 	db.many('select buildingID, description from building')
 	.then(function(buildings) {
 		db.one('select * from studentAccount where podID=$1', req.user.podid) 
@@ -89,7 +89,7 @@ function submitApplication (req, res, next) {
 	db.one('select sid from studentAccount where podid = $1', req.user.podid)
 	.then(function(student){
 		if (student.sid != req.body.sid) {
-			req.session.error="You just tried to submit an application for someone else. How did you do that?"
+			req.session.err="You just tried to submit an application for someone else. How did you do that?"
 			res.redirect('/students/apply');
 		} else {
 			db.oneOrNone('SELECT sid, semcode from application where sid = $1 and semcode = $2', [student.sid, req.body.semcode])
@@ -97,7 +97,7 @@ function submitApplication (req, res, next) {
 				if (record == null){ //there is already an application - don't accept a new one!
 					db.none('INSERT INTO application (sid, semcode, submitted, info) VALUES ($1, $2, $3, $4)', [student.sid, req.body.semcode, submitted, req.body])
 					.then(function() {
-						req.session.success="You just applied for residence! Thanks!";
+						req.session.suc="You just applied for residence! Thanks!";
 						res.redirect('/students/apply');
 					})
 					.catch(function(err) {
@@ -105,13 +105,88 @@ function submitApplication (req, res, next) {
 					});
 				} else {
 
-					req.session.error = "You've already submitted an application for that semester, but thanks for being so excited!";
+					req.session.err = "You've already submitted an application for that semester, but thanks for being so excited!";
 					res.redirect('/students/apply');
 				}
 			})
 			.catch(function(err) {
 				return next(err);
 			});
+		}
+	})
+	.catch(function(err) {
+		return next(err);
+	});
+}
+
+function getMaintenanceForm(req, res, next) {
+	var error = req.session.err;
+	var suc = req.session.suc;
+	delete req.session.err;
+	delete req.session.suc;
+	db.many('select * from building')
+	.then(function(buildings) {
+		db.one('select * from studentAccount where podid=$1', req.user.podid)
+		.then(function(student) {
+			db.many('select buildingid, roomid from room')
+			.then(function(rooms){
+				res.render('maintenanceForm', {
+					user: req.user, 
+					current_user: student,
+					building_list: buildings, 
+					room_list: rooms,
+					err: error,
+					suc: suc, 
+					title: 'Submit Maintenance Request'
+				});
+			})
+			.catch(function(err) {
+				return next(err);
+			});
+		})
+		.catch(function(err) {
+			return next(err);
+		});
+	})
+	.catch(function(err) {
+		return next(err);
+	});
+
+}
+
+function postMaintenanceForm(req, res, next) {
+	var submitted = new Date(Date.now());
+	//TODO Verify given roomID and buildingID
+
+	req.body.room=JSON.parse(req.body.room);
+	db.one('select sid from studentAccount where podid = $1', req.user.podid)
+	.then(function(student){
+		if (student.sid != req.body.sid) {
+			req.session.err="You just tried to submit information as someone else. How did you do that?";
+			res.redirect('/students/maintenance');
+		} else {
+			if (req.user.roomid == 0) {
+				db.none('insert into maintrequest (podid, buildingid, submitted, info) VALUES ($1, $2, $3, $4)', [req.user.podid, req.body.building, submitted, req.body])
+				.then(function() {
+					req.session.suc="Thanks for letting us know, we'll get to it promptly";
+					res.redirect('/students/maintenance')
+				})
+				.catch(function(err) {
+					req.session.err="Something went wrong, please try again. If this problem persists, contact your site administrator";
+					return next(err);
+				});
+			} else {
+				db.none('insert into maintrequest (podid, buildingid, roomid, submitted, info) VALUES ($1, $2, $3, $4, $5)', [req.user.podid, req.body.room.buildid, req.body.room.roomid, submitted, req.body])
+				.then(function() {
+					req.session.suc="Thanks for letting us know, we'll get to it promptly";
+					res.redirect('/students/maintenance')
+				})
+				.catch(function(err) {
+					req.session.err="Something went wrong, please try again. If this problem persists, contact your site administrator";
+					return next(err);
+				});
+
+			}
 		}
 	})
 	.catch(function(err) {
@@ -389,7 +464,9 @@ function getProgram(req, res, next) {
 
 
 module.exports = {
-	ApplicationForm: ApplicationForm,
+	getMaintenanceForm: getMaintenanceForm,
+	postMaintenanceForm: postMaintenanceForm,
+	applicationForm: applicationForm,
 	submitApplication: submitApplication,
 	incidentCreationForm: incidentCreationForm,
 	getAllPrograms: getAllPrograms,

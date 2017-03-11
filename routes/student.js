@@ -79,7 +79,7 @@ router.get('/program/:programID', auth.ensureStudentAuthenticated, db.getProgram
 
 router.get('/programs', auth.ensureStudentAuthenticated, db.getAllPrograms);
 
-router.get('/apply', auth.ensureStudentAuthenticated, db.ApplicationForm);
+router.get('/apply', auth.ensureStudentAuthenticated, db.applicationForm);
 router.post('/apply', auth.ensureStudentAuthenticated, db.submitApplication);
 
 router.get('/application-status', function (req, res, next) {
@@ -96,10 +96,7 @@ router.get('/equipment', function (req, res, next) {
 
 router.get('/calendar', auth.ensureStudentAuthenticated, db.getAllPrograms); //TODO - Make a calendar
 
-router.get('/maintenance', function (req, res, next) {
-	res.json({
-		message:"GET to /student/maintenance"
-	});	
-});
+router.get('/maintenance', auth.ensureStudentAuthenticated, db.getMaintenanceForm);
+router.post('/maintenance', auth.ensureStudentAuthenticated, db.postMaintenanceForm);
 
 module.exports = router;
