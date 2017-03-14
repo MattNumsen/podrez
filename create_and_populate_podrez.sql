@@ -112,8 +112,8 @@ CREATE TABLE reservation (
 CREATE TABLE maintRequest (
 	maintID SERIAL PRIMARY KEY, 
 	podID INTEGER NOT NULL, 
-	buildingID VARCHAR, 
-	roomID VARCHAR NOT NULL,
+	buildingID VARCHAR NOT NULL, 
+	roomID VARCHAR,
 	submitted DATE NOT NULL,
 	info JSONB,
 	FOREIGN KEY (roomID, buildingID) REFERENCES room (roomID, buildingID), 	
@@ -149,8 +149,8 @@ CREATE TABLE equipment (
 CREATE TABLE rentalAgreement (
 	eqRentalID SERIAL PRIMARY KEY,
 	podID INTEGER NOT NULL, 
-	rentalDate DATE NOT NULL, 
-	submitted DATE NOT NULL,
+	rentalDate TIMESTAMP WITH TIME ZONE NOT NULL, 
+	submitted TIMESTAMP WITH TIME ZONE NOT NULL,
 	FOREIGN KEY (podID) REFERENCES podUser (podID)
 );
 
@@ -167,7 +167,8 @@ CREATE TABLE program (
 	resID_owner VARCHAR NOT NULL,
 	resID_creater VARCHAR NOT NULL, 
 	podID INTEGER NOT NULL, 
-	submitted DATE NOT NULL,
+	submitted TIMESTAMP WITH TIME ZONE NOT NULL,
+	event_date TIMESTAMP WITH TIME ZONE NOT NULL,
 	info JSONB,
 	FOREIGN KEY(podID) REFERENCES podUser (podID),
 	FOREIGN KEY(resID_owner) REFERENCES reslifeAccount (resID),
@@ -190,6 +191,12 @@ CREATE TABLE attending (
 	PRIMARY KEY (podID, programID)
 );
 
+
+CREATE TABLE dates (
+	day DATE PRIMARY KEY, 
+	semcode INTEGER NOT NULL, 
+	FOREIGN KEY (semcode) REFERENCES semester (semcode)
+);
 
 /*STUDENT ACCOUNT CREATION FUNCTION*/
 CREATE OR REPLACE FUNCTION insert_student(firstName VARCHAR, lastName VARCHAR, preferredName VARCHAR, SID INTEGER, age INTEGER, birthdate DATE, gender VARCHAR) 

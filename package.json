@@ -15,6 +15,7 @@
     "express": "~4.14.0",
     "express-bootstrap-service": "^1.0.0",
     "hjs": "~0.0.6",
+    "moment": "^2.17.1",
     "morgan": "~1.7.0",
     "nunjucks": "^3.0.0",
     "nunjucks-date": "^1.2.0",

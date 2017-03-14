@@ -15,13 +15,16 @@ var SALT_WORK_FACTOR = 10;
 
 
 
-router.get('/test', db.incidentCreationForm);
+router.get('/test', function(req, res, next) {
+	res.render('playwithtime');
+});
 router.get('/', function(req, res, next) {
 
-	var er1, er2, er3;
+	var er1, er2, er3, msg;
 	er1=req.session.error1;
 	er2=req.session.error2; 
 	er3=req.session.error3;
+	msg=req.session.message;
 	delete req.session.error1; 
  	delete req.session.error2; 
  	delete req.session.error3;
@@ -30,6 +33,7 @@ router.get('/', function(req, res, next) {
   	error1: er1,
   	error2: er2, 
   	error3: er3,
+  	msg: msg,
   	user: req.user
   	}); 
 

@@ -1,7 +1,8 @@
 var db = require("./initDB.js");
 
 var promise = require('bluebird');
-
+var moment=require('moment');
+moment().format();
 var options = {
   // global event notification;
     error: function (error, e) {
@@ -38,7 +39,6 @@ db.connect()
 
 TODO:
 perhaps include a DB entity with the information for each semesters intended questionaire information?
-
 could have a form for housing admin to input as many different questions as they'd like, 
 and then store those parameters as a JSON, which then is used by a templater to auto generate the form for them?
 
@@ -58,7 +58,7 @@ function applicationForm (req, res, next) {
 			.then(function(semesters) {
 				res.render('ApplicationForm', {
 					user: req.user, 
-					title: 'Submit Applicaiton', 
+					title: 'Submit Application', 
 					building_list: buildings, 
 					current_user: stud, 
 					semester_list: semesters, 
@@ -105,7 +105,7 @@ function submitApplication (req, res, next) {
 					});
 				} else {
 
-					req.session.err = "You've already submitted an application for that semester, but thanks for being so excited!";
+					req.session.err = "You've already submitted an Application for that semester, but thanks for being so excited!";
 					res.redirect('/students/apply');
 				}
 			})
@@ -247,12 +247,23 @@ function programSubmission(req, res, next) {
 
 	var pass=req.body;
 	var count=req.body.collabCount;
-	var submitted = new Date(Date.now());
+	var regex = /^([0-9]+):([0-9]+) ([a-zA-Z]+)$/
+	var submitted = moment();
+	var planned = moment(req.body.date);
+	var result = req.body.time.match(regex);
+	var hours=parseInt(result[1]);
+	var minutes=parseInt(result[2]);
+
+	if (result[3] == "PM"){
+		hours = hours + 12;
+	}
+		
+	var event_date = moment(planned).add(hours, 'hours').add(minutes, 'minutes');
 	db.one('select resID from reslifeAccount where podID = $1', req.user.podid)
 	.then(function(resdata) {
 		db.tx(function(t) {
 
-	        return t.one('INSERT INTO program(info, resid_owner, resid_creater, submitted, podid) VALUES($1, $2, $2, $3, $4) RETURNING programid', [pass, resdata.resid, submitted, req.user.podid])
+	        return t.one('INSERT INTO program(info, resid_owner, resid_creater, submitted, event_date, podid) VALUES($1, $2, $2, $3, $4, $5) RETURNING programid', [pass, resdata.resid, submitted, event_date, req.user.podid])
 	            .then(function (program) {
 	            	if (count == 1){
 	            		t.none('INSERT INTO account_program(programID, resID) VALUES($1, $2)', [program.programid, req.body.collaborators]);
@@ -340,17 +351,65 @@ function getAllStudents(req, res, next) {
 
 function getStudent(req, res, next) {  //TODO - add things like what building/room they are in, programs they are attending, incidents they've been involved in etc
 	var studID = parseInt(req.params.studID);
-	db.one('select * from studentAccount where sid = $1', studID)
-	.then(function(data) {
-		res.render('studentProfile', {
-				studAccount: data, 
-				user: req.user, 
-				title: "View Student" 
+	//things we want: Agreement information, Application information, Attending information
+	db.one('select * from studentAccount where sid=$1', studID)
+	.then(function(student) { 
+		//what conditions would make me break early? A student viewing not-themself... anything else?
+
+		//if the current user is a STUDENT AND their session podid does not equal the podID of the requested profile, then...
+		if((req.user.role == 1) && (student.podid !=req.user.podid)) { 
+			req.session.message="You don't have permission to view this profile"
+			res.redirect('/');
+		} else { //if they are viewing themselves, OR, they are a reslife staff etc
+			db.oneOrNone(`	SELECT agr.roomid, agr.buildingid, bui.description 
+							FROM agreement agr, application app , building bui
+							WHERE app.sid = $1 AND 
+							agr.applicationid = app.applicationid AND 
+							app.semcode=1 AND 
+							bui.buildingid = agr.buildingid`, student.sid)//TODO - Use current date to lookup which semcode is ACTIVE using the "dates" table
+			.then(function(resinfo) {
+				db.manyOrNone(`	SELECT res.firstname, res.lastname, pro.programid, pro.event_date, pro.info from program pro
+								JOIN attending att on att.podid=$1 and att.programid=pro.programid
+								JOIN reslifeAccount res on pro.resid_creater=res.resid
+								WHERE pro.event_date > current_timestamp
+								ORDER by pro.event_date
+								LIMIT 4;`, student.podid)
+				.then(function(prolist) {
+					db.manyOrNone(`	SELECT res.firstname, res.lastname, pro.programid, pro.event_date, pro.info from program pro
+								JOIN attending att on att.podid=$1 and att.programid=pro.programid
+								JOIN reslifeAccount res on pro.resid_creater=res.resid
+								WHERE pro.event_date < current_timestamp
+								ORDER by pro.event_date DESC
+								LIMIT 4;`, student.podid)
+					.then(function(oldprolist) {						
+						//select the INCIDENTS
+						res.render('studentProfile', {
+							user: req.user, 
+							resinfo: resinfo, 
+							prolist: prolist,
+							student: student,
+							oldprolist: oldprolist, 
+							title: "Profile View"
+						});
+					})
+					.catch(function(err) {
+						return next(err);
+					});
+				})
+				.catch(function(err) {
+					return next(err);
+				});
+				
+			})
+			.catch(function(err) {
+				return next(err);
 			});
+		}
 	})
-	.catch(function (err) {
+	.catch(function(err) {
 		return next(err);
 	});
+	
 }
 
 

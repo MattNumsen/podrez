@@ -4,6 +4,11 @@
 
     <div class="container">
       <div class="row" id="body">
+      {% if msg %}
+        <div class="alert alert-danger">
+          {{ msg }}
+        </div>
+        {% endif %} 
         <div class="col-xs-4" id="loginRow">
           <div class="span4 collapse-group">
             <h1 href="#" style="text-align:center"><a data-toggle="collapse" data-target="#studentForm">Student</a></h1>

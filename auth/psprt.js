@@ -11,20 +11,6 @@ var options = {
 
 };
 
-
-
-
-
-
-
-
-
-
-
-
-//----------------------------------------------------------------//
-
-
 /* Student Accont Authentication, called from logging in by post to /student (SUBJECT TO CHANGE) */
 passport.use('student', new LocalStrategy(options, function (username, password, done) {
   //console.log("passport STUDENT " + username);
@@ -209,15 +195,16 @@ function ensureStudentAuthenticated(req, res, next) {
 	if (req.isAuthenticated()) {     
 		if (req.user.role === 1) {
 			return next();   
-		}
+		} else if ((req.user.role === 2) || (req.user.role === 3))  { //could just be else, but i may want to add an admin auth?
+			req.session.message="You have to be logged in as a student to access this page";
+			res.redirect('/');
+		} 
 	} else {     
-		if (req.method === "POST") {       
-		res.json({         
-			status: "fail",         
-			message: "User is not authenticated."       
-			});     
-		} else if (req.method === "GET") {       
-			res.redirect('/');     
+		if (req.method === "GET") {  
+			res.redirect('/');
+		} else {       
+			req.session.message="Sorry, you aren't logged in";     
+			res.redirect('/');
 		}   
 	} 
 }
@@ -227,15 +214,16 @@ function ensureReslifeAuthenticated(req, res, next) {
 	if (req.isAuthenticated()) {     
 		if (req.user.role === 2) {
 			return next();   
-		}
+		} else if ((req.user.role === 1) || (req.user.role === 3))  { //could just be else, but i may want to add an admin auth?
+			req.session.message="You have to be logged in as a reslife user to access this page";
+			res.redirect('/');
+		} 
 	} else {     
-		if (req.method === "POST") {       
-		res.json({         
-			status: "fail",         
-			message: "User is not authenticated."       
-			});     
-		} else if (req.method === "GET") {       
-			res.redirect('/');     
+		if (req.method === "GET") {  
+			res.redirect('/');
+		} else {       
+			req.session.message="Sorry, you aren't logged in";     
+			res.redirect('/');
 		}   
 	} 
 }
@@ -243,17 +231,18 @@ function ensureReslifeAuthenticated(req, res, next) {
 function ensureHousingAuthenticated(req, res, next) {   
 	//console.log('Housing Authenticate?', req.isAuthenticated());   
 	if (req.isAuthenticated()) {     
-		if (req.user.role === 2) {
+		if (req.user.role === 3) {
 			return next();   
-		}
+		} else if ((req.user.role === 2) || (req.user.role === 1))  { //could just be else, but i may want to add an admin auth?
+			req.session.message="You have to be logged in as a housing user to access this page";
+			res.redirect('/');
+		} 
 	} else {     
-		if (req.method === "POST") {       
-		res.json({         
-			status: "fail",         
-			message: "User is not authenticated."       
-			});     
-		} else if (req.method === "GET") {       
-			res.redirect('/');     
+		if (req.method === "GET") {  
+			res.redirect('/');
+		} else {       
+			req.session.message="Sorry, you aren't logged in";     
+			res.redirect('/');
 		}   
 	} 
 }

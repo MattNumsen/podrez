@@ -9,11 +9,24 @@
             <img src="/profile_default.png" alt="Profile Picture" style="width:98%; height:98%; display:block; margin:auto"></img>
             <ul class="list-group">
               <li class="list-group-item"><span class="glyphicon glyphicon-user" aria-hidden="true"></span> 
-              {{ studAccount.firstname }} {{ studAccount.lastname }} </li>
-              <li class="list-group-item"><span class="glyphicon glyphicon-home" aria-hidden="true"></span> Wildcat Tent Village</li>
-              <li class="list-group-item"><span class="glyphicon glyphicon-tag" aria-hidden="true"></span> Tent 1</li>
-              <li class="list-group-item"><span class="glyphicon glyphicon-book" aria-hidden="true"></span> {{ studAccount.sid }}</li>
-              <li class="list-group-item"><span class="glyphicon glyphicon-gift" aria-hidden="true"></span> {{ studAccount.birthdate | date("MMMM Do YYYY") }}</li>
+              {{ student.firstname }} {{ student.lastname }} </li>
+              <li class="list-group-item"><span class="glyphicon glyphicon-home" aria-hidden="true"></span> 
+                {% if resinfo %}
+                  {{ resinfo.description }}
+                {% else %}
+                  I don't have an active residence life agreement!
+                {% endif %}
+              </li>
+              <li class="list-group-item"><span class="glyphicon glyphicon-tag" aria-hidden="true"></span>
+
+                {% if resinfo %}
+                  {{ resinfo.buildingid }} {{ resinfo.roomid }}
+                {% else %}
+                  I don't have an active residence life agreement!
+                {% endif %}
+              </li>
+              <li class="list-group-item"><span class="glyphicon glyphicon-book" aria-hidden="true"></span> {{ student.sid }}</li>
+              <li class="list-group-item"><span class="glyphicon glyphicon-gift" aria-hidden="true"></span> {{ student.birthdate | date("MMMM Do YYYY") }}</li>
               <li class="list-group-item"><span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> email@host.somthing</li>
 
 
@@ -27,6 +40,9 @@
                 <h2> Recent Incident Activity </h2>
               </div>
                 <!-- Incidents Table-->
+                {% if user.role == 1 %}
+                <h4> Nothing to see here! </h4>
+                {% else %}
                 <table class="table">
                   <tr>
                     <th>Title</th>
@@ -44,6 +60,7 @@
                     <td> Patty Spivot </td>
                   </tr>
                 </table>
+                {% endif %}
             </div>
           </div>
           <div class="row" id="bottom-about">
@@ -51,26 +68,24 @@
               <div class="panel-heading">
                 <h2> Upcoming Program Attendance </h2>
               </div>
-                <!-- Table for Upcoming Programs-->
+            
                 <table class="table">
+
                   <tr>
                     <th>Title</th>
                     <th>Date</th>
                     <th>Location</th>
                     <th>Organized by</th>
                   </tr>
+
+                {% for program in prolist %}
                   <tr>
-                    <td> Demons Demonstrating Driving Dodges </td>
-                    <td> October 5th, 2017 </td>
-                    <td> An absolute hellscape </td>
-                    <td> Alan Rickman </td>
-                  </tr>
-                  <tr>
-                    <td> Floating Five Fathoms Farther with Famous Friend, Pharrel Williams </td>
-                    <td> October 6th, 2017 </td>
-                    <td> Pharrels crib, it's tite </td>
-                    <td> Patty Spivot </td>
-                  </tr>
+                  <td> <a href="/students/program/{{ program.programid }}"> {{ program.info.title }} </a> </td>
+                  <td> {{ program.event_date | date("hh:mm a, MMMM Do, YYYY") }} </td>
+                  <td> {{ program.info.building }} </td>
+                  <td> {{ program.firstname }} {{ program.lastname }} </td>
+                  </tr>  
+                {% endfor %}
                 </table>
             </div>
           </div>
@@ -87,18 +102,14 @@
                     <th>Location</th>
                     <th>Organized by</th>
                   </tr>
+                 {% for program in oldprolist %}
                   <tr>
-                    <td> Gratuitously Gangrenous Grandmas </td>
-                    <td> October 1st, 2017 </td>
-                    <td> Also an absolute hellscape </td>
-                    <td> Alan Rickman </td>
-                  </tr>
-                  <tr>
-                    <td> Hardly Having Hilarious Hair </td>
-                    <td> October 2nd, 2017 </td>
-                    <td> Also Pharrel's crib, it's tite </td>
-                    <td> Patty Spivot </td>
-                  </tr>
+                  <td> <a href="/students/program/{{ program.programid }}"> {{ program.info.title }} </a> </td>
+                  <td> {{ program.event_date | date("hh:mm a, MMMM Do, YYYY") }} </td>
+                  <td> {{ program.info.building }} </td>
+                  <td> {{ program.firstname }} {{ program.lastname }} </td>
+                  </tr>  
+                {% endfor %}
                 </table>
             </div>
           </div>
