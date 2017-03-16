@@ -194,6 +194,7 @@ function ensureStudentAuthenticated(req, res, next) {
 	//console.log('Student Authenticate?', req.isAuthenticated());   
 	if (req.isAuthenticated()) {     
 		if (req.user.role === 1) {
+			req.session.branch="/students/";
 			return next();   
 		} else if ((req.user.role === 2) || (req.user.role === 3))  { //could just be else, but i may want to add an admin auth?
 			req.session.message="You have to be logged in as a student to access this page";
@@ -213,7 +214,8 @@ function ensureReslifeAuthenticated(req, res, next) {
 	//console.log('Reslife Authenticate?', req.isAuthenticated());   
 	if (req.isAuthenticated()) {     
 		if (req.user.role === 2) {
-			return next();   
+			req.session.branch="/reslife/";
+			return next();			  
 		} else if ((req.user.role === 1) || (req.user.role === 3))  { //could just be else, but i may want to add an admin auth?
 			req.session.message="You have to be logged in as a reslife user to access this page";
 			res.redirect('/');
@@ -232,6 +234,7 @@ function ensureHousingAuthenticated(req, res, next) {
 	//console.log('Housing Authenticate?', req.isAuthenticated());   
 	if (req.isAuthenticated()) {     
 		if (req.user.role === 3) {
+			req.session.branch="/housing/";
 			return next();   
 		} else if ((req.user.role === 2) || (req.user.role === 1))  { //could just be else, but i may want to add an admin auth?
 			req.session.message="You have to be logged in as a housing user to access this page";

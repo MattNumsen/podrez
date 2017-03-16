@@ -80,7 +80,7 @@
 
                 {% for program in prolist %}
                   <tr>
-                  <td> <a href="/students/program/{{ program.programid }}"> {{ program.info.title }} </a> </td>
+                  <td> <a href="{{ branch }}program/{{ program.programid }}"> {{ program.info.title }} </a> </td>
                   <td> {{ program.event_date | date("hh:mm a, MMMM Do, YYYY") }} </td>
                   <td> {{ program.info.building }} </td>
                   <td> {{ program.firstname }} {{ program.lastname }} </td>
@@ -104,7 +104,7 @@
                   </tr>
                  {% for program in oldprolist %}
                   <tr>
-                  <td> <a href="/students/program/{{ program.programid }}"> {{ program.info.title }} </a> </td>
+                  <td> <a href="{{ branch }}program/{{ program.programid }}"> {{ program.info.title }} </a> </td>
                   <td> {{ program.event_date | date("hh:mm a, MMMM Do, YYYY") }} </td>
                   <td> {{ program.info.building }} </td>
                   <td> {{ program.firstname }} {{ program.lastname }} </td>

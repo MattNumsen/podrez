@@ -80,6 +80,7 @@ router.get('/program/:programID', auth.ensureStudentAuthenticated, db.getProgram
 router.get('/programs', auth.ensureStudentAuthenticated, db.getAllPrograms);
 
 router.get('/apply', auth.ensureStudentAuthenticated, db.applicationForm);
+
 router.post('/apply', auth.ensureStudentAuthenticated, db.submitApplication);
 
 router.get('/application-status', function (req, res, next) {
@@ -88,11 +89,7 @@ router.get('/application-status', function (req, res, next) {
 	});	
 });
 
-router.get('/equipment', function (req, res, next) {
-	res.json({
-		message:"GET to /student/equipment"
-	});	
-});
+router.get('/equipment', auth.ensureStudentAuthenticated, db.getEQform1);
 
 router.get('/calendar', auth.ensureStudentAuthenticated, db.getAllPrograms); //TODO - Make a calendar
 

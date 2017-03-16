@@ -15,9 +15,8 @@ var SALT_WORK_FACTOR = 10;
 
 
 
-router.get('/test', function(req, res, next) {
-	res.render('playwithtime');
-});
+router.get('/test', db.getEQform1);
+router.post('/test', db.postEQform1);
 router.get('/', function(req, res, next) {
 
 	var er1, er2, er3, msg;

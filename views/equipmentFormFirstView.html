@@ -1,0 +1,50 @@
+{% extends 'outer.html' %}  
+{% block body %}
+	{% include 'header.html' %}
+
+
+<div class="container">
+	<div class="jumbotron" id="mainBody-jumbo">
+	<h2>Rental Timeframe</h2>
+	<!-- "{{ branch }}equipment1" -->
+		<form id="eqform1" method="post" action="/test/" name="eqform1"> 
+			{% if err %}
+				<div class="alert alert-danger">
+					{{ err }}
+				</div>
+			{% endif %}
+      <table class="table">
+        <tbody>
+          <tr>
+            <td>                
+              <div class="input-group">
+                <div class="input-group-addon" id="login_area">Pick Up Date</div>
+                <div class="form-group"> <!-- Date input -->
+                  <input required class="form-control" id="dp3" form="eqform1" name="start_date" placeholder="MM/DD/YYYY" type="text"/>
+                </div>
+              </div>
+              <div class="alert alert-info">
+              	<p style="font-size:14px">All pickups must be done before noon on the chosen day </p>
+              </div>
+            </td>
+            <td>                
+              <div class="input-group">
+                <div class="input-group-addon" id="login_area">Return Date</div>
+                <div class="form-group"> <!-- Date input -->
+                  <input required class="form-control" id="dp3" form="eqform1" name="end_date" placeholder="MM/DD/YYYY" type="text"/>
+                </div>
+              </div>
+              <div class="alert alert-info">
+              <p style="font-size:14px">Must retun items before closing hours (5:30 PM) on chosen day</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <input class="btn btn-primary" type="submit" value="Next">
+    </form>
+	</div>
+</div>
+
+
+{% endblock %}

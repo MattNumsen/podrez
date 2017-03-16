@@ -146,21 +146,43 @@ CREATE TABLE equipment (
 	info JSONB
 );
 
+CREATE TABLE rental_status (
+	status INTEGER PRIMARY KEY, 
+	description VARCHAR NOT NULL
+);
+
 CREATE TABLE rentalAgreement (
 	eqRentalID SERIAL PRIMARY KEY,
 	podID INTEGER NOT NULL, 
-	rentalDate TIMESTAMP WITH TIME ZONE NOT NULL, 
+	status INTEGER NOT NULL,
+	rental_start_date TIMESTAMP WITH TIME ZONE NOT NULL, 
+	rental_end_date TIMESTAMP WITH TIME ZONE NOT NULL,
 	submitted TIMESTAMP WITH TIME ZONE NOT NULL,
-	FOREIGN KEY (podID) REFERENCES podUser (podID)
+	updated TIMESTAMP WITH TIME ZONE NOT NULL,
+	FOREIGN KEY (podID) REFERENCES podUser (podID), 
+	FOREIGN KEY (status) REFERENCES rental_status(status)
 );
 
 CREATE TABLE equipment_rentalAgreement (
-	eqRentalID INTEGER NOT NULL, 
+	eqRentalID INTEGER NOT NULL,
+	status INTEGER NOT NULL, 
 	eqID INTEGER NOT NULL,
 	FOREIGN KEY (eqRentalID) REFERENCES rentalAgreement (eqRentalID),
 	FOREIGN KEY (eqID) REFERENCES equipment (eqID),
+	FOREIGN KEY (status) REFERENCES rental_status(status),
 	PRIMARY KEY (eqRentalID, eqID)
 );
+
+
+
+INSERT INTO rental_status (status, description) VALUES 
+(0, 'Pending Approval'),
+(1, 'Approved'),
+(2, 'Rented'), 
+(3, 'Returned'), 
+(4, 'Cancelled'), 
+(5, 'Overdue'), 
+(6, 'Complete');
 
 CREATE TABLE program (
 	programID SERIAL PRIMARY KEY,

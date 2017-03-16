@@ -22,7 +22,7 @@
 			{% for prgm in program_info %}	
 			<!--program_info[i] = progID, info, submitted, creatorFName, creatorLName, ownerFName, ownerLName		-->
 				<tr>
-					<td><a href="/reslife/program/{{ prgm.progid }}">{{ prgm.info.title }}</a></td>
+					<td><a href="{{ branch }}program/{{ prgm.progid }}">{{ prgm.info.title }}</a></td>
 					<td>{{ prgm.submitted | date("dddd, MMMM Do YYYY hh:mm a")}} </td>
 					<td>{{ prgm.creatorfname }} {{ prgm.creatorlname }} </td>
 					<td>{{ prgm.ownerfname }} {{ prgm.ownerlname }} </td>
