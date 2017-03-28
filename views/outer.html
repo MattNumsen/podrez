@@ -132,6 +132,15 @@
        });
     });
     </script>
+
+    <script>
+    $(document).ready(function() {
+          $("#equipment").change(function(){
+          var count=$('#equipment :selected').length;
+          $("#equipCount").val(count);
+       });
+    });
+    </script>
   </head>
   <body>
   {% block body %}

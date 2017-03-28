@@ -958,3 +958,53 @@ INSERT INTO semester (description) VALUES
 ('FA2017'),
 ('SP2017'),
 ('SU2017');
+
+INSERT INTO equipment (info) VALUES 
+('{"name":"Soccer Ball","description":"Soccer ball - blue","value":"10"}'),
+('{"name":"Soccer Ball","description":"Soccer ball - blue","value":"10"}'),
+('{"name":"Soccer Ball","description":"Soccer ball - white","value":"10"}'),
+('{"name":"Soccer Ball","description":"Soccer ball - green","value":"10"}'),
+('{"name":"Football","description":"NFL style football","value":"15"}'),
+('{"name":"Football","description":"NFL style football","value":"15"}'),
+('{"name":"Foam Football","description":"Foam street football","value":"5"}'),
+('{"name":"Foam Football","description":"Foam street football","value":"5"}'),
+('{"name":"Hockey Stick","description":"Bauer Hockey stick, black, 160cm","value":"40"}'),
+('{"name":"Hockey Stick","description":"Bauer Hockey stick, black, 160cm","value":"40"}');
+
+INSERT INTO rentalAgreement (podid, status, rental_start_date, rental_end_date, submitted, updated)
+VALUES
+(1, 0, '2017-04-01', '2017-04-02', current_date, current_date),
+(1, 0, '2017-04-03', '2017-04-04', current_date, current_date),
+(1, 0, '2017-04-05', '2017-04-06', current_date, current_date),
+(1, 0, '2017-04-07', '2017-04-08', current_date, current_date),
+(1, 0, '2017-04-09', '2017-04-10', current_date, current_date),
+(1, 0, '2017-04-11', '2017-04-12', current_date, current_date),
+(1, 0, '2017-04-13', '2017-04-14', current_date, current_date),
+(1, 0, '2017-04-15', '2017-04-16', current_date, current_date);
+
+INSERT INTO equipment_rentalAgreement (eqrentalid, status, eqid)
+VALUES
+(2, 0, 1),
+(2, 0, 2),
+(2, 0, 3),
+(3, 0, 4),
+(3, 0, 5),
+(3, 0, 6),
+(4, 0, 1),
+(4, 0, 2),
+(4, 0, 3),
+(5, 0, 4),
+(5, 0, 5),
+(5, 0, 6),
+(6, 0, 1),
+(6, 0, 2),
+(6, 0, 3),
+(7, 0, 4),
+(7, 0, 5),
+(7, 0, 6),
+(8, 0, 1),
+(8, 0, 2),
+(8, 0, 3),
+(1, 0, 4),
+(1, 0, 5),
+(1, 0, 6);

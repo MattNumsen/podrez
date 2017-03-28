@@ -422,20 +422,52 @@ function getProgram(req, res, next) {
 }
 function getEQform1(req, res, next) {
 	var error = req.session.err;
+	var start_date = req.session.start_date;
+	var end_date = req.session.end_date;
 	delete req.session.err;
-	res.render('equipmentFormFirstView', {
-		user: req.user, 
-		err: error,
-		title: "Equipment Rental - Pick a Date"
-	});
+	delete req.session.start_date;
+	delete req.session.end_date;
+
+	if (start_date == null) { //need a date
+		res.render('equipmentFormFirstView', {
+			user: req.user, 
+			err: error,
+			branch: req.session.branch,
+			title: "Equipment Rental - Pick a Date"
+		});
+	} else { //render the second form and remember your dates!
+		db.many(`
+			SELECT eq.eqid, eq.info FROM rentalAgreement rent
+			JOIN equipment_rentalAgreement eqrent
+				ON rent.eqrentalid = eqrent.eqrentalid
+				AND ((rent.rental_start_date, rent.rental_end_date) OVERLAPS($1, $2) = 't')
+				AND rent.status NOT IN (4, 6)
+			RIGHT JOIN equipment eq
+				ON eqrent.eqid = eq.eqid
+			WHERE eqrent.eqid is NULL;
+		`, [start_date, end_date])
+		.then(function(eqlist){
+			req.session.start_date = start_date;
+			req.session.end_date = end_date;
+			res.render('equipmentFormSecondView', { 
+				user: req.user, 
+				err: error,
+				eqlist: eqlist,
+				branch: req.session.branch,
+				start_date: start_date, 
+				end_date: end_date, 
+				title: "Equipment Rental - Pick Equipment"
+			});
+		})
+		.catch(function(err) {
+			return next(err);
+		});
+	}
 }
 function postEQform1(req, res, next) {
 	var start_date = moment(req.body.start_date);
 	var end_date = moment(req.body.end_date);
 	var range = end_date.diff(start_date, 'days');
-	console.log(start_date);
-	console.log(end_date);
-	console.log(range);
 	if (range < 0) {
 		req.session.err="You picked the dates in the wrong order"
 	} else if (range > 5) {
@@ -444,15 +476,43 @@ function postEQform1(req, res, next) {
 		//get all UNBOOKED equipment, and move to the next page
 		req.session.start_date = start_date;
 		req.session.end_date = end_date;
-
-		
 	}
+	res.redirect('../equipment');
+}
 
-	res.redirect('/test');
-	
+function postEQform2(req, res, next) {
+	var now = new Date(Date.now());
+	console.log(req.body)
+	db.tx(function(t){
+		return t.one(`
+			INSERT INTO rentalAgreement (podid, status, rental_start_date, rental_end_date, submitted, updated)
+			VALUES
+			($1, 0, $2, $3, $4, $4) 
+			RETURNING eqrentalid
+			`, [req.user.podid, req.session.start_date, req.session.end_date, now])
+		.then(function(data){
+			if (req.body.equipCount == 1) {
+				console.log(data.eqrentalid);
+				console.log(req.body.equipment);
+				t.none('INSERT INTO equipment_rentalAgreement (eqrentalid, status, eqid) VALUES ($1, 0, $2)', [data.eqrentalid, req.body.equipment]);
+			} else {
+				for (i=0; i<req.body.equipCount; i++) {
+					t.none('INSERT INTO equipment_rentalAgreement (eqrentalid, status, eqid) VALUES ($1, 0, $2)', [data.eqrentalid, req.body.equipment[i]]);
+				}
+			}
+		})
+	})
+	.then(function(){
+		req.session.message="success";
+		res.redirect('../equipment');
+	})
+	.catch(function(err){
+		return next(err);
+	})
 }
 
 module.exports = {
+	postEQform2: postEQform2,
 	postEQform1: postEQform1,
 	getEQform1: getEQform1,
 	getMaintenanceForm: getMaintenanceForm,

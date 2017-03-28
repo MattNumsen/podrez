@@ -90,6 +90,8 @@ router.get('/application-status', function (req, res, next) {
 });
 
 router.get('/equipment', auth.ensureStudentAuthenticated, db.getEQform1);
+router.post('/equipment', auth.ensureStudentAuthenticated, db.postEQform1);
+router.post('/equipment2', auth.ensureStudentAuthenticated, db.postEQform2);
 
 router.get('/calendar', auth.ensureStudentAuthenticated, db.getAllPrograms); //TODO - Make a calendar
 

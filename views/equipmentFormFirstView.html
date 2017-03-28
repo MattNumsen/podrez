@@ -7,7 +7,7 @@
 	<div class="jumbotron" id="mainBody-jumbo">
 	<h2>Rental Timeframe</h2>
 	<!-- "{{ branch }}equipment1" -->
-		<form id="eqform1" method="post" action="/test/" name="eqform1"> 
+		<form id="eqform1" method="post" action="{{branch}}equipment/" name="eqform1"> 
 			{% if err %}
 				<div class="alert alert-danger">
 					{{ err }}
@@ -24,7 +24,7 @@
                 </div>
               </div>
               <div class="alert alert-info">
-              	<p style="font-size:14px">All pickups must be done before noon on the chosen day </p>
+              	<p style="font-size:14px">Items reserved are not available until after 12 noon on the chosen day</p>
               </div>
             </td>
             <td>                
@@ -35,7 +35,7 @@
                 </div>
               </div>
               <div class="alert alert-info">
-              <p style="font-size:14px">Must retun items before closing hours (5:30 PM) on chosen day</p>
+              <p style="font-size:14px">Items are due back before 12 noon on the chosen day</p>
               </div>
             </td>
           </tr>
