@@ -95,7 +95,12 @@ router.post('/equipment2', auth.ensureStudentAuthenticated, db.postEQform2);
 
 router.get('/calendar', auth.ensureStudentAuthenticated, db.getAllPrograms); //TODO - Make a calendar
 
-router.get('/maintenance', auth.ensureStudentAuthenticated, db.getMaintenanceForm);
+router.get('/maintenance/submit', auth.ensureStudentAuthenticated, db.getMaintenanceForm);
+router.get('/maintenance', auth.ensureStudentAuthenticated, db.getSubmittedMaintenance);
+router.get('/maintenance/:maintenanceid', auth.ensureStudentAuthenticated, db.getMaintenanceForm);
+
 router.post('/maintenance', auth.ensureStudentAuthenticated, db.postMaintenanceForm);
+router.post('/maintenance/:maintenanceid', auth.ensureStudentAuthenticated, db.updateMaintenance);
+router.post('/maintenance/delete/:maintenanceid', auth.ensureStudentAuthenticated, db.deleteMaintenance);
 
 module.exports = router;

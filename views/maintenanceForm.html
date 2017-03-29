@@ -2,7 +2,16 @@
 {% block body %}
 	{% include 'header.html' %}
 
-
+	{% if maintreq %}
+		{% if maintreq.podid == user.podid %}
+			{% set owned, exists = true %}
+		{% else %}
+			{% set owned = false %}
+		{% endif %}
+	{% else %}
+		{% set owned = true %}
+		{% set exists = false %}
+	{% endif %}
 	<div class="container">
 		<div class="jumbotron">
 			{% if err %}
@@ -17,7 +26,10 @@
             </div>
             {% endif %}
 			<h2>Submit a Maintenance Request</h2>
-			<form id="maintenanceForm" method="post" action="/students/maintenance">
+
+			<form id="deleteForm" method="post" action="{{branch }}maintenance/delete/{{ maintreq.maintid }}">
+			</form>
+			<form id="maintenanceForm" method="post" action="{{ branch }}maintenance/{{ maintreq.maintid }}">
 				<table class="table">
 					<tbody>
 						<tr>
@@ -29,32 +41,39 @@
 							<td>
 								<div class="input-group">
 									<div class="input-group-addon">Name</div>
-				                  <input type="text" class="form-control" readonly id="name" name="name" form="maintenanceForm" value="{{ current_user.firstname }} {{ current_user.lastname }}" />
-				                </div>
-				            </td>
-				            <td>
-				                <div class="input-group">
-				                  <div class="input-group-addon">Student ID</div>
-				                  <input type="text" class="form-control" readonly id="sid" name="sid" form="maintenanceForm" value="{{ current_user.sid }}" />
-				                </div>
+	                  <input type="text" class="form-control" readonly id="name" name="name" form="maintenanceForm" value="{{ current_user.firstname }} {{ current_user.lastname }}" />
+	              </div>
+	            </td>
+	            <td>
+                <div class="input-group">
+                  <div class="input-group-addon">Student ID</div>
+                  <input type="text" class="form-control" readonly id="sid" name="sid" form="maintenanceForm" value="{{ current_user.sid }}" />
+                </div>
 							</td>
 						</tr>
 						<tr>
 							<td>
 								<div class="input-group">
-									<div class="input-group-addon">Building</div>
-									<select required id="building" class="select2" form="maintenanceForm" name="room" style="min-width:20%; width:100%; height:100%">
+									<div class="input-group-addon">Room</div>
+									<select required {% if not owned %} disabled {% endif %} id="building" class="select2" form="maintenanceForm" name="room" style="min-width:20%; width:100%; height:100%">
+									<option value="0">Building Wide</option>
 									{% for room in room_list %}
-										<option value="{&quot;roomid&quot;: &quot;{{ room.roomid }}&quot; , &quot;buildid&quot; : &quot;{{ room.buildingid }}&quot;}">{{ room.buildingid }} {{ room.roomid }}</option>       
-									{% endfor %} 
-										<option selected value="0">Building Wide</option>                   
+										<option 
+
+										{% if (room.roomid == maintreq.roomid) and (room.buildingid == maintreq.buildingid) %}
+										 selected
+										{%  endif %}
+
+										value="{&quot;roomid&quot;: &quot;{{ room.roomid }}&quot; , &quot;buildid&quot; : &quot;{{ room.buildingid }}&quot;}">
+										{{ room.buildingid }} {{ room.roomid }}</option>       
+									{% endfor %}
 									</select>
 								</div>
 							</td>
 							<td>
 								<div class="input-group">
 									<div class="input-group-addon">Building</div>
-									<select required id="building" class="select2" form="maintenanceForm" name="building" style="min-width:20%; width:100%; height:100%">
+									<select required {% if not owned %} disabled {% endif %} id="building" class="select2" form="maintenanceForm" name="building" style="min-width:20%; width:100%; height:100%">
 									{% for bldng in building_list %}
 										<option value="{{ bldng.buildingid }}">{{ bldng.description }} ({{ bldng.buildingid }})</option>       
 									{% endfor %}                    
@@ -72,13 +91,13 @@
 						</tr>
 						<tr>
 							<td colspan="2" class="fullwidth row row-eq-height">
-				                <div class="input-group">
+				        <div class="input-group">
 									<div class="input-group-addon">Description</div>
-									<textarea class="form-control" form="maintenanceForm" rows="8" name="description"></textarea>
-				                </div>
-				                <div class="alert alert-info">
-				                <p>Be sure to include lots of detail, such as specific locations of whatever needs maintenance, how long it has been a problem, and what you think may have caused it. <p>
-				                </div>
+									<textarea class="form-control" {% if not owned %} readonly {% endif %} form="maintenanceForm" rows="8" name="description">{{maintreq.info.description}}</textarea>
+	                </div>
+	                <div class="alert alert-info">
+	                	<p>Be sure to include lots of detail, such as specific locations of whatever needs maintenance, how long it has been a problem, and what you think may have caused it. <p>
+	                </div>
 							</td>
 						</tr>
 						<tr>
@@ -89,28 +108,42 @@
 						<tr>
 							<td colspan="2" class="fullwidth row row-eq-height">	
 								<div class="input-group input-group-lg">
-					                <div class="input-group-addon">Severity</div>
+					        <div class="input-group-addon">Severity</div>
 									<label class="radio-inline">Extreme<br>
-										<input required type="radio" name="severity" value="5" form="maintenanceForm">
+										<input required {% if maintreq.info.severity == 5 %} checked {% endif %} 
+										{% if not owned %} disabled {% endif %}
+										type="radio" name="severity" value="5" form="maintenanceForm">
 									</label>
 									<label class="radio-inline">Moderate<br>
-										<input required type="radio" name="severity" value="4" form="maintenanceForm">
+										<input required {% if maintreq.info.severity == 4 %} checked {% endif %} 
+										{% if not owned %} disabled {% endif %}
+										 type="radio" name="severity" value="4" form="maintenanceForm">
 									</label>
 									<label class="radio-inline">Neutral<br>
-										<input required checked type="radio" name="severity" value="3" form="maintenanceForm">
+										<input required {% if maintreq.info.severity == 3 %} checked {% elif maintreq %} {% else %} checked {% endif %} 
+										{% if not owned %} disabled {% endif %}
+										 type="radio" name="severity" value="3" form="maintenanceForm">
 									</label>
 									<label class="radio-inline">Mild<br>
-										<input required type="radio" name="severity" value="2" form="maintenanceForm">
+										<input required {% if maintreq.info.severity == 2 %} checked {% endif %} 
+										{% if not owned %} disabled {% endif %}
+										 type="radio" name="severity" value="2" form="maintenanceForm">
 									</label>
 									<label class="radio-inline">None<br>
-										<input required type="radio" name="severity" value="1" form="maintenanceForm">
+										<input required {% if maintreq.info.severity == 1 %} checked {% endif %} 
+										{% if not owned %} disabled {% endif %}
+										 type="radio" name="severity" value="1" form="maintenanceForm">
 								    </label>
 								</div>
 							</td>
 						</tr>
 					</tbody>
 				</table>
-				<input class="btn btn-primary" type="submit" value="Submit">
+				{% if owned and exists %}
+				<p> <input class="btn btn-primary" form="maintenanceForm" type="submit" value="Update"> <input class="btn btn-danger" form="deleteForm" type="submit" value="Delete"> </p>
+				{% elif owned %}
+				<input class="btn btn-primary" form="maintenanceForm" type="submit" value="Submit">
+				{% endif %}
 			</form>
 		</div>
 	</div>

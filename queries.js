@@ -101,21 +101,28 @@ function submitApplication (req, res, next) {
 function getMaintenanceForm(req, res, next) {
 	var error = req.session.err;
 	var suc = req.session.suc;
+	var maintid = req.params.maintenanceid;
+	if (maintid == null) {
+		maintid = 0;
+	}
 	delete req.session.err;
 	delete req.session.suc;
 	db.task(function(t) {
 		var buildingQ =  t.many('select * from building');
 		var studentQ = t.one('select * from studentAccount where podid=$1', req.user.podid);
-		var roomQ = t.many('select buildingid, roomid from room')
+		var roomQ = t.many('select buildingid, roomid from room');
+		var maintreqQ = t.oneOrNone('select maintid, podid, roomid, buildingid, info from maintrequest where maintid = $1', maintid);
 
-		return Promise.all([buildingQ, studentQ, roomQ]).spread(function(buildings, student, rooms){
+		return Promise.all([buildingQ, studentQ, roomQ, maintreqQ]).spread(function(buildings, student, rooms, maintreq){
 			res.render('maintenanceForm', {
 				user: req.user, 
+				branch: req.session.branch,
 				current_user: student,
 				building_list: buildings, 
 				room_list: rooms,
 				err: error,
 				suc: suc, 
+				maintreq: maintreq,
 				title: 'Submit Maintenance Request'
 			});
 		})
@@ -129,6 +136,9 @@ function postMaintenanceForm(req, res, next) {
 	//TODO Verify given roomID and buildingID
 
 	req.body.room=JSON.parse(req.body.room);
+	console.log(req.body.room);
+	console.log(req.body);
+	console.log(req.body.building);
 
 	db.one('select sid from studentAccount where podid = $1', req.user.podid)
 	.then(function(student){
@@ -136,17 +146,17 @@ function postMaintenanceForm(req, res, next) {
 			req.session.err="You just tried to submit information as someone else. How did you do that?";
 			res.redirect('/students/maintenance');
 		} else {
-			if (req.user.roomid == 0) {
+			if (req.body.room == 0) {
 				db.none('insert into maintrequest (podid, buildingid, submitted, info) VALUES ($1, $2, $3, $4)', [req.user.podid, req.body.building, submitted, req.body])
 				.then(function() {
 					req.session.suc="Thanks for letting us know, we'll get to it promptly";
-					res.redirect('/students/maintenance')
+					res.redirect('../maintenance/submit')
 				})	
 			} else {
 				db.none('insert into maintrequest (podid, buildingid, roomid, submitted, info) VALUES ($1, $2, $3, $4, $5)', [req.user.podid, req.body.room.buildid, req.body.room.roomid, submitted, req.body])
 				.then(function() {
 					req.session.suc="Thanks for letting us know, we'll get to it promptly";
-					res.redirect('/students/maintenance')
+					res.redirect('../maintenance/submit')
 				})
 			}
 		}
@@ -155,6 +165,53 @@ function postMaintenanceForm(req, res, next) {
 		return next(err);
 	});
 }
+function getSubmittedMaintenance(req, res, next){
+	//get all the maintenance requests which were submitted by the current user
+	db.manyOrNone('SELECT * from maintrequest where podid = $1', req.user.podid)
+	.then(function(maintlist){
+		res.render('viewAllMaintenance', {
+			branch: req.session.branch, 
+			user: req.user, 
+			title: 'View Maintenance Requests',
+			maintlist: maintlist 
+		})
+	})
+	.catch(function(err) {
+		return next(err);
+	})
+}
+function updateMaintenance(req, res, next){
+	var maintid = req.params.maintenanceid;
+	req.body.room=JSON.parse(req.body.room);
+	db.task(function(t){
+		if (req.body.room == 0) {
+			return t.none('update maintrequest set (buildingid, info) = ($1, $2) where maintid = $3', [req.body.building, req.body, maintid]);
+		} else {
+			return t.none('update maintrequest set (buildingid, roomid, info) = ($1, $2, $3) where maintid = $4', [req.body.room.buildid, req.body.room.roomid, req.body, maintid]);
+		}
+	})
+	.then(function() {
+		req.session.suc="Thanks for letting us know, we'll get to it promptly";
+		res.redirect('../maintenance/submit');
+	})
+	.catch(function(err) {
+		return next(err);
+	});
+}
+function deleteMaintenance(req, res, next){
+	db.none('delete from maintrequest where maintid = $1', req.params.maintenanceid)
+	.then(function(){
+		req.session.suc="Thanks for taking that work off our plate!";
+		res.redirect('../submit');
+	})
+	.catch(function(err) {
+		return next(err);
+	})
+
+}
+
+
+
 function incidentCreationForm(req, res, next) {
 	//What do we need for the form? List of all students (with agreements) NAMES and STUDENT IDs
 	//list of all other CAs and ACs and RLCs names (and IDs?)
@@ -482,7 +539,7 @@ function postEQform1(req, res, next) {
 
 function postEQform2(req, res, next) {
 	var now = new Date(Date.now());
-	console.log(req.body)
+
 	db.tx(function(t){
 		return t.one(`
 			INSERT INTO rentalAgreement (podid, status, rental_start_date, rental_end_date, submitted, updated)
@@ -492,8 +549,7 @@ function postEQform2(req, res, next) {
 			`, [req.user.podid, req.session.start_date, req.session.end_date, now])
 		.then(function(data){
 			if (req.body.equipCount == 1) {
-				console.log(data.eqrentalid);
-				console.log(req.body.equipment);
+
 				t.none('INSERT INTO equipment_rentalAgreement (eqrentalid, status, eqid) VALUES ($1, 0, $2)', [data.eqrentalid, req.body.equipment]);
 			} else {
 				for (i=0; i<req.body.equipCount; i++) {
@@ -515,8 +571,13 @@ module.exports = {
 	postEQform2: postEQform2,
 	postEQform1: postEQform1,
 	getEQform1: getEQform1,
+
+	getSubmittedMaintenance: getSubmittedMaintenance,
+	updateMaintenance: updateMaintenance,
+	deleteMaintenance: deleteMaintenance,
 	getMaintenanceForm: getMaintenanceForm,
 	postMaintenanceForm: postMaintenanceForm,
+
 	applicationForm: applicationForm,
 	submitApplication: submitApplication,
 	incidentCreationForm: incidentCreationForm,
